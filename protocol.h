@@ -19,9 +19,11 @@ typedef struct {
 	int16_t yaw;
 } JoystickPose;
 
+
+//TODO: Maybe modify this to have a single Message with an id and a union of types of payload.
 typedef struct {
 	MessageId id;
-	JoystickPose phi;
+	JoystickPose pose;
 } __attribute__((packed)) JoystickMessage;
 _Static_assert(sizeof(JoystickMessage) == MESSAGE_SIZE, "JoystickMessage size is incorrect.");
 

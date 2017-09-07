@@ -14,7 +14,7 @@
  */
 
 #include "in4073.h"
-
+#include "protocol.h"
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -59,6 +59,34 @@ void process_key(uint8_t c)
 	}
 }
 
+void handle_message() 
+{
+	uint8_t msg[MESSAGE_SIZE];
+	//Copy the message out of the buffer.
+	for(uint8_t i = 0; i < MESSAGE_SIZE; i++) {
+		msg[i] = dequeue(&rx_queue);
+	}
+	switch (msg[0]) //first byte is the message ID
+	{
+		case JOYSTICK:
+		{
+			JoystickMessage *joymsg = (JoystickMessage*) &msg[0];
+			printf("Joystick pose is now: %d %d %d %d\n\n", joymsg->pose.lift, 
+				joymsg->pose.roll, joymsg->pose.pitch, joymsg->pose.yaw);
+			break;
+		}
+		case MODE:
+		{
+			ModeMessage *modemsg = (ModeMessage*) msg;
+			process_key(modemsg->mode);
+			break;
+		}
+		default:
+			printf("Received unknown message type: %d.\n", msg[0]);
+	}
+}
+
+
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -80,7 +108,12 @@ int main(void)
 
 	while (!demo_done)
 	{
-		if (rx_queue.count) process_key( dequeue(&rx_queue) );
+		//If a full message is in the buffer, read it. 
+		if (rx_queue.count >= MESSAGE_SIZE) {
+			handle_message();
+			
+		}
+		process_key( dequeue(&rx_queue) );
 
 		if (check_timer_flag()) 
 		{
