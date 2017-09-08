@@ -18,14 +18,20 @@ void init_queue(queue *q){
 }
 
 void enqueue(queue *q,char x){
-
+	if (q->count >= QUEUE_SIZE) {
+		printf("Queue is full!");
+		return;
+	}
 	q->last = (q->last + 1) % QUEUE_SIZE;
 	q->Data[ q->last ] = x;
 	q->count += 1;
 }
 
 char dequeue(queue *q){
-
+	if (q->count == 0) {
+		printf("Queue is empty!");
+		return;
+	}
 	char x = q->Data[ q->first ];
 	q->first = (q->first + 1) % QUEUE_SIZE;
 	q->count -= 1;

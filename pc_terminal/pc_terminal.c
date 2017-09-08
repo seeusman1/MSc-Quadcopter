@@ -80,7 +80,7 @@ int	term_getchar()
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
-
+#include "../protocol.h"
 int serial_device = 0;
 int fd_RS232;
 
@@ -173,6 +173,139 @@ int 	rs232_putchar(char c)
 	return result;
 }
 
+// int rs232_sendMsg(queue buf){
+// 	int current = buf.first;
+// 	int sts;
+// 	int q_count = buf.count;
+
+// 	for (current; current < buf.last; ++current)
+// 	{	
+// 		sts=rs232_putchar(Data[current]);
+// 		q_count--;
+		
+// 		if (sts != 1){
+// 			printf("Failed:rs232_sendMsg\n");
+// 		}
+
+// 	}
+// 	if (q_count != 0){
+// 		printf("Queue not emptied\n");
+// 	}
+// }
+/* 
+ * Author: Dimitris 
+ * 
+ */
+void rs232_createMsg_mode(char c, ModeMessage msg){
+	
+	switch(c) {
+		case '0':
+		//MessageId = 1;
+		msg.mode = 0;
+		case '1':
+		//MessageId = 1;
+		msg.mode = 1;
+		case '2':
+		//MessageId = 1;
+		msg.mode = 2;
+		case '3':
+		//MessageId = 1;
+		msg.mode = 3;
+		case '4':
+		//MessageId = 1;
+		msg.mode = 4;
+		case '5':
+		///MessageId = 1;
+		msg.mode = 5;
+		case '6':
+		//MessageId = 1;
+		msg.mode = 6;
+		case '7':
+		//MessageId = 1;
+		msg.mode = 7;
+		case '8':
+		//MessageId = 1;
+		msg.mode = 8;
+
+		default :
+		printf("Invalid Mode!,defaults in 0 mode\n");
+		//MessageId = 1;
+		msg.mode = 0;
+	}
+}
+
+// void rs232_createMsg_joystick (unsigned char axes, JoystickMessage msg){
+
+// 	//Dummy function to be used as Joystick Messaging 
+// 	//msg.MessageId = 2;
+
+// 	//Derive lift,roll,pitch,yaw
+// 	msg.pose.lift = 1;
+
+// 	msg.pose.roll = 1;
+
+// 	msg.pose.pitch = 1;
+
+// 	msg.pose.yaw = 1;
+
+// }
+
+/* Joystick area 
+
+*/
+
+
+// int axis[6];
+// int button[12]; 
+
+// unsigned int  mon_time_ms(void)
+// {
+//         unsigned int    ms;
+//         struct timeval  tv;
+//         struct timezone tz;
+
+//         gettimeofday(&tv, &tz);
+//         ms = 1000 * (tv.tv_sec % 65); // 65 sec wrap around
+//         ms = ms + tv.tv_usec / 1000;
+//         return ms;
+// }
+
+// int joy_init(){
+// 	int fd;
+
+// 	//Initialize Joystick
+// 	if ((fd = open(JS_DEV, O_RDONLY)) < 0) {
+// 		perror("jstest");
+// 		exit(1);
+// 	}
+
+	
+// 	/* non-blocking mode
+// 	 */
+// 	fcntl(fd, F_SETFL, O_NONBLOCK);
+
+// 	return fd;
+// }
+
+/*
+ * Author Rutger van den Berg
+ * Writes 9 bytes from the provided pointer to UART.
+ * Assumes that 9 bytes containing a single message can be found at the specified location. 
+ */
+void send_message(char *msg) {
+	int sts;
+
+	for (uint8_t i = 0; i < MESSAGE_SIZE; i++)
+	{	
+		sts=rs232_putchar(msg[i]);
+		
+		if (sts != 1){
+			printf("Failed:rs232_sendMsg\n");
+		}
+
+	}
+}
+
 
 /*----------------------------------------------------------------
  * main -- execute terminal
@@ -180,12 +313,16 @@ int 	rs232_putchar(char c)
  */
 int main(int argc, char **argv)
 {
+	// struct js_event js;
+	
 	char	c;
 
 	term_puts("\nTerminal program - Embedded Real-Time Systems\n");
 
 	term_initio();
 	rs232_open();
+
+
 
 	term_puts("Type ^C to exit\n");
 
@@ -198,8 +335,15 @@ int main(int argc, char **argv)
 	 */
 	for (;;)
 	{
-		if ((c = term_getchar_nb()) != -1)
-			rs232_putchar(c);
+		if ((c = term_getchar_nb()) != -1){
+
+			// rs232_putchar(c);
+			ModeMessage msg;
+			msg.id = MODE;
+			msg.mode = c;
+			send_message((char*) &msg);
+
+		}
 
 		if ((c = rs232_getchar_nb()) != -1)
 			term_putchar(c);

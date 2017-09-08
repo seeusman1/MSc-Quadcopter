@@ -15,6 +15,7 @@
 
 #include "in4073.h"
 #include "protocol.h"
+#include "assert.h"
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -58,9 +59,14 @@ void process_key(uint8_t c)
 			nrf_gpio_pin_toggle(RED);
 	}
 }
-
+/*
+ * Author: Rutger van den Berg
+ * Reads 9 bytes from the UART RX buffer, and handles the message. 
+ * Assumes that at least 9 bytes are in the buffer.
+ */
 void handle_message() 
 {
+	assert(rx_queue.count >= MESSAGE_SIZE);
 	uint8_t msg[MESSAGE_SIZE];
 	//Copy the message out of the buffer.
 	for(uint8_t i = 0; i < MESSAGE_SIZE; i++) {
@@ -109,11 +115,15 @@ int main(void)
 	while (!demo_done)
 	{
 		//If a full message is in the buffer, read it. 
+		
 		if (rx_queue.count >= MESSAGE_SIZE) {
 			handle_message();
 			
 		}
-		process_key( dequeue(&rx_queue) );
+		for (int i = 0; i < 1000000; i++) {
+
+		}
+		// process_key( dequeue(&rx_queue) );
 
 		if (check_timer_flag()) 
 		{
