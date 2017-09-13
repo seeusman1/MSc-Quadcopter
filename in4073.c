@@ -16,6 +16,7 @@
 #include "in4073.h"
 #include "protocol.h"
 #include "assert.h"
+#include "statemanager/statemanager.h"
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -51,6 +52,24 @@ void process_key(uint8_t c)
 		case 'f':
 			ae[3] -= 10;
 			if (ae[3] < 0) ae[3] = 0;
+			break;
+		case '0':
+			try_transition(SAFE);
+			break;
+		case '1':
+			try_transition(PANIC);
+			break;
+		case '2':
+			try_transition(MANUAL);
+			break;
+		case '3':
+			try_transition(CALIBRATION);
+			break;
+		case '4':
+			try_transition(YAWCONTROL);
+			break;
+		case '5':
+			try_transition(FULLCONTROL);
 			break;
 		case 27:
 			demo_done = true;
@@ -136,7 +155,8 @@ int main(void)
 			printf("%3d %3d %3d %3d | ",ae[0],ae[1],ae[2],ae[3]);
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
-			printf("%4d | %4ld | %6ld \n", bat_volt, temperature, pressure);
+			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
+			printf("| %u \n", get_current_state());
 
 			clear_timer_flag();
 		}
