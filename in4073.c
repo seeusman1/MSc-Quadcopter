@@ -127,7 +127,7 @@ int main(void)
 	baro_init();
 	spi_flash_init();
 	ble_init();
-
+	init_statemanager();
 	uint32_t counter = 0;
 	demo_done = false;
 

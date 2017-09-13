@@ -1,7 +1,7 @@
 #include "statemanager.h"
+#include "../in4073.h"
 bool allowed_transitions [MODE_COUNT][MODE_COUNT];
 state_t current_state = SAFE;
-// _Static_assert(sizeof(allowed_transitions) == (MODE_COUNT*MODE_COUNT/8)+1, "allowed_transitions unexpectedly large.");
 
 /*
  * Author: Rutger van den Berg
