@@ -20,17 +20,25 @@
 #include "ml.h"
 #include "app_util_platform.h"
 #include <math.h>
+#include "protocol.h"
+
 
 #define RED		22
 #define YELLOW		24
 #define GREEN		28
 #define BLUE		30
 #define INT_PIN		5
+#define UINT16_MAX 16384
 
 bool demo_done;
 
+
+
+
 // Control
 int16_t motor[4],ae[4];
+
+JoystickPose current_pose;
 void run_filters_and_control();
 
 // Timers

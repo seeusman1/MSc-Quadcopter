@@ -78,6 +78,12 @@ void process_key(uint8_t c)
 			nrf_gpio_pin_toggle(RED);
 	}
 }
+
+void handle_joystick(JoystickMessage message) {
+	
+	
+}
+
 /*
  * Author: Rutger van den Berg
  * Reads 9 bytes from the UART RX buffer, and handles the message. 
@@ -96,6 +102,7 @@ void handle_message()
 		case JOYSTICK:
 		{
 			JoystickMessage *joymsg = (JoystickMessage*) &msg[0];
+			current_pose = joymsg->pose;
 			printf("Joystick pose is now: %d %d %d %d\n\n", joymsg->pose.lift, 
 				joymsg->pose.roll, joymsg->pose.pitch, joymsg->pose.yaw);
 			break;
