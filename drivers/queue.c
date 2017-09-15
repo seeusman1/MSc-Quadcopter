@@ -30,7 +30,7 @@ void enqueue(queue *q,char x){
 char dequeue(queue *q){
 	if (q->count == 0) {
 		printf("Queue is empty!");
-		return;
+		return 0;
 	}
 	char x = q->Data[ q->first ];
 	q->first = (q->first + 1) % QUEUE_SIZE;
