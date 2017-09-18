@@ -173,119 +173,67 @@ int 	rs232_putchar(char c)
 	return result;
 }
 
-// int rs232_sendMsg(queue buf){
-// 	int current = buf.first;
-// 	int sts;
-// 	int q_count = buf.count;
-
-// 	for (current; current < buf.last; ++current)
-// 	{	
-// 		sts=rs232_putchar(Data[current]);
-// 		q_count--;
-		
-// 		if (sts != 1){
-// 			printf("Failed:rs232_sendMsg\n");
-// 		}
-
-// 	}
-// 	if (q_count != 0){
-// 		printf("Queue not emptied\n");
-// 	}
-// }
-/* 
- * Author: Dimitris 
- * 
+/*****************Messaging Infastructure***************************/
+/*
+ * Author: D.Patoukas
+ * Reads the inputed character and returns a ModeMessage to be sent 
+ *  
  */
-void rs232_createMsg_mode(char c, ModeMessage msg){
-	
-	switch(c) {
-		case '0':
-		//MessageId = 1;
-		msg.mode = 0;
-		case '1':
-		//MessageId = 1;
-		msg.mode = 1;
-		case '2':
-		//MessageId = 1;
-		msg.mode = 2;
-		case '3':
-		//MessageId = 1;
-		msg.mode = 3;
-		case '4':
-		//MessageId = 1;
-		msg.mode = 4;
-		case '5':
-		///MessageId = 1;
-		msg.mode = 5;
-		case '6':
-		//MessageId = 1;
-		msg.mode = 6;
-		case '7':
-		//MessageId = 1;
-		msg.mode = 7;
-		case '8':
-		//MessageId = 1;
-		msg.mode = 8;
 
+ModeMessage rs232_createMsg_mode(char c){
+	
+	ModeMessage msg;
+    
+	msg.id = MODE;
+	switch(c){
+		//ESC Button
+		case 27:
+		msg.mode = 27;
+		break;
+		case 'q':
+			msg.mode = 'q';
+			break;
+		case 'a':
+			msg.mode = 'a';
+			break;
+		case 'w':
+			msg.mode = 'w';
+			break;
+		case 's':
+			msg.mode = 's';
+			break;
+		case 'e':
+			msg.mode = 'e';
+			break;
+		case 'd':
+			msg.mode = 'd';
+			break;
+		case 'r':
+			msg.mode = 'r';
+			break;
+		case 'f':
+			msg.mode = 'f';
+			break;
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		msg.mode = c - '0';
+		//printf("Mode:%d\n",(int) msg.mode);
+		break;
 		default :
 		printf("Invalid Mode!,defaults in 0 mode\n");
-		//MessageId = 1;
 		msg.mode = 0;
-	}
+}
+	return msg;
 }
 
-// void rs232_createMsg_joystick (unsigned char axes, JoystickMessage msg){
 
-// 	//Dummy function to be used as Joystick Messaging 
-// 	//msg.MessageId = 2;
-
-// 	//Derive lift,roll,pitch,yaw
-// 	msg.pose.lift = 1;
-
-// 	msg.pose.roll = 1;
-
-// 	msg.pose.pitch = 1;
-
-// 	msg.pose.yaw = 1;
-
-// }
-
-/* Joystick area 
-
-*/
-
-
-// int axis[6];
-// int button[12]; 
-
-// unsigned int  mon_time_ms(void)
-// {
-//         unsigned int    ms;
-//         struct timeval  tv;
-//         struct timezone tz;
-
-//         gettimeofday(&tv, &tz);
-//         ms = 1000 * (tv.tv_sec % 65); // 65 sec wrap around
-//         ms = ms + tv.tv_usec / 1000;
-//         return ms;
-// }
-
-// int joy_init(){
-// 	int fd;
-
-// 	//Initialize Joystick
-// 	if ((fd = open(JS_DEV, O_RDONLY)) < 0) {
-// 		perror("jstest");
-// 		exit(1);
-// 	}
-
-	
-// 	/* non-blocking mode
-// 	 */
-// 	fcntl(fd, F_SETFL, O_NONBLOCK);
-
-// 	return fd;
-// }
 
 /*
  * Author Rutger van den Berg
@@ -323,6 +271,7 @@ int main(int argc, char **argv)
 	rs232_open();
 
 
+	
 
 	term_puts("Type ^C to exit\n");
 
@@ -333,17 +282,19 @@ int main(int argc, char **argv)
 
 	/* send & receive
 	 */
+	ModeMessage current_MM;
 	for (;;)
 	{
-		if ((c = term_getchar_nb()) != -1){
 
 			// rs232_putchar(c);
-			ModeMessage msg;
-			msg.id = MODE;
-			msg.mode = c;
-			send_message((char*) &msg);
+			if ((c = term_getchar_nb()) != -1){
 
-		}
+				if (c != 0 ){
+					current_MM = rs232_createMsg_mode(c);
+					send_message((char*) &current_MM);
+				}
+
+			}
 
 		if ((c = rs232_getchar_nb()) != -1)
 			term_putchar(c);
