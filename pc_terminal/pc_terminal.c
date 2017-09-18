@@ -191,29 +191,13 @@ ModeMessage rs232_createMsg_mode(char c){
 		msg.mode = 27;
 		break;
 		case 'q':
-			msg.mode = 'q';
-			break;
 		case 'a':
-			msg.mode = 'a';
-			break;
 		case 'w':
-			msg.mode = 'w';
-			break;
 		case 's':
-			msg.mode = 's';
-			break;
 		case 'e':
-			msg.mode = 'e';
-			break;
 		case 'd':
-			msg.mode = 'd';
-			break;
 		case 'r':
-			msg.mode = 'r';
-			break;
 		case 'f':
-			msg.mode = 'f';
-			break;
 		case '0':
 		case '1':
 		case '2':
@@ -223,7 +207,7 @@ ModeMessage rs232_createMsg_mode(char c){
 		case '6':
 		case '7':
 		case '8':
-		msg.mode = c - '0';
+		msg.mode = c ;
 		//printf("Mode:%d\n",(int) msg.mode);
 		break;
 		default :
