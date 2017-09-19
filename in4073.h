@@ -26,6 +26,7 @@
 #define GREEN		28
 #define BLUE		30
 #define INT_PIN		5
+#define CRC_POLYNOMIAL (uint8_t)0x2F
 
 bool demo_done;
 

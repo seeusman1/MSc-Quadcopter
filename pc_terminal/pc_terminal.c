@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#include "../protocol.h"
+#define CRC_POLYNOMIAL ((uint8_t)0x2F)
 
 /*------------------------------------------------------------
  * console I/O
@@ -48,6 +50,31 @@ void	term_putchar(char c)
 	putc(c,stderr);
 }
 
+
+
+//Computing CRC bits
+uint8_t compute_crc8 (char *message)
+{
+	char crc = 0;
+	int byte;
+	for (byte =0; byte <(MESSAGE_SIZE-1); ++byte)
+	{
+		crc ^= (char) (message[byte]);
+		uint8_t bit;
+		for (bit =0; bit<8;bit++)
+		{
+			if ((crc & 0x80) !=0)
+			{
+				crc = (uint8_t) ((crc << 1) ^ CRC_POLYNOMIAL);
+			}
+			else
+				crc <<=1;
+		}
+	}
+return crc;
+}
+
+
 int	term_getchar_nb()
 {
         static unsigned char 	line [2];
@@ -80,7 +107,7 @@ int	term_getchar()
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
-#include "../protocol.h"
+
 int serial_device = 0;
 int fd_RS232;
 
@@ -184,6 +211,7 @@ ModeMessage rs232_createMsg_mode(char c){
 	
 	ModeMessage msg;
     
+	msg.header= MESSAGE_HEADER;
 	msg.id = MODE;
 	switch(c){
 		//ESC Button
@@ -214,6 +242,7 @@ ModeMessage rs232_createMsg_mode(char c){
 		printf("Invalid Mode!,defaults in 0 mode\n");
 		msg.mode = 0;
 }
+	msg.crc = compute_crc8 ((char*) &msg); //adding crc bits
 	return msg;
 }
 
@@ -226,8 +255,8 @@ ModeMessage rs232_createMsg_mode(char c){
  */
 void send_message(char *msg) {
 	int sts;
-
-	for (uint8_t i = 0; i < MESSAGE_SIZE; i++)
+	uint8_t i;
+	for (i = 0; i < MESSAGE_SIZE; i++)
 	{	
 		sts=rs232_putchar(msg[i]);
 		
