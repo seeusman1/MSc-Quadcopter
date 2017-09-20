@@ -14,6 +14,7 @@
 #include <inttypes.h>
 #include "../protocol.h"
 #define CRC_POLYNOMIAL ((uint8_t)0x2F)
+#define MESSAGE_SIZE 9
 
 /*------------------------------------------------------------
  * console I/O

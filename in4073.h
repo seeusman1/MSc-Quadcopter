@@ -26,7 +26,7 @@
 #define GREEN		28
 #define BLUE		30
 #define INT_PIN		5
-#define CRC_POLYNOMIAL (uint8_t)0x2F
+
 
 bool demo_done;
 
@@ -54,6 +54,7 @@ typedef struct {
 void init_queue(queue *q);
 void enqueue(queue *q, char x);
 char dequeue(queue *q);
+char peek(queue *q, uint16_t position);
 
 // UART
 #define RX_PIN_NUMBER  16
