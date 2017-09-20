@@ -46,6 +46,8 @@ char peek(queue *q, uint16_t position) {
 		printf("Attempting to peek nonexistant character.\n");
 		return 0;
 	}
-	
-	return q->Data[(q->first + position) % QUEUE_SIZE];
+	char x = q->Data[(q->first + position) % QUEUE_SIZE];
+	printf("Peeking byte: 0x%02X\n", x);
+
+	return x;
 }

@@ -1,6 +1,7 @@
 #ifndef __CRC_H
 #define __CRC_H
 #include <string.h>
+#include <stdbool.h>
 
 #define CRC_HEADER ((uint8_t)0x0F)
 #define CRC_MESSAGE_SIZE 11
@@ -37,6 +38,7 @@ uint8_t compute_crc8 (char *payload)
 				crc <<=1;
 		}
 	}
+	printf("calculated CRC for 0x%18X: 0x%02X\n", *payload, crc);
 	return crc;
 }
 /*
@@ -47,6 +49,7 @@ uint8_t compute_crc8 (char *payload)
 bool verify_crc(CRCMessage *message) {
 	//compute crc over the header+payload
 	uint8_t crc = compute_crc8((char*) message);
+	printf("message CRC: 0x%02X\n", message->crc);
 	if (crc != message->crc) {
 		return false;
 	} 
@@ -61,6 +64,7 @@ CRCMessage make_packet(char payload[CRC_PAYLOAD_SIZE]) {
 	message.header = CRC_HEADER;
 	memcpy(&(message.payload), &(payload[0]), CRC_PAYLOAD_SIZE);	
 	message.crc = compute_crc8(payload);
+	printf("Created packet with CRC: 0x%02X\n", message.crc);
 	return message;
 }
 

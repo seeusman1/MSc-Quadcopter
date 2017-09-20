@@ -11,6 +11,7 @@
  */
 void process_key(uint8_t c)
 {
+	printf("Processing key: %c\n", c);
 	switch (c)
 	{
 		case 'q':
@@ -110,8 +111,14 @@ bool detect_header()
 	while (rx_queue.count >= MESSAGE_SIZE)
 	{
 		head = dequeue(&rx_queue);
-		if (head == CRC_HEADER)
+		printf("Read byte: 0x%02X \n", head);
+		if (head == CRC_HEADER) {
+			printf("Header found.\n");
+
 			return true;
+		}
+		printf("Dropping byte: c: %c, 0x%x\n", head, head);
+		
 	}
 	return false;
 }
@@ -125,12 +132,21 @@ bool detect_header()
 	while (true) {
 		//find a CRC header, if none can be found return false
 		if(!detect_header()) {
+			printf("No header detected!\n");
 			return false;
 		}	
 		//read the message 
 		for (uint16_t i = 0; i < CRC_PAYLOAD_SIZE; i++) {
 			message->payload[i] = peek(&rx_queue, i);
 		}
+		char buf[CRC_PAYLOAD_SIZE + 1];
+		memcpy(buf, message->payload, CRC_PAYLOAD_SIZE);
+		buf[CRC_PAYLOAD_SIZE] = '\0';
+		printf("Message read: 0x");
+		for (uint16_t i = 0; i < CRC_PAYLOAD_SIZE; i++) {
+			printf("%02X", message->payload[i]);
+		}
+		printf("\n");
 		message->crc = peek(&rx_queue, CRC_PAYLOAD_SIZE);
 
 		/* 
@@ -139,21 +155,24 @@ bool detect_header()
 		 * If not, there was a transmission error so try again. 
 		 */
 		if (verify_crc(message)) {
+			printf("CRC verified.\n");
 			for(uint8_t i = 0; i <= CRC_PAYLOAD_SIZE; i++) {
 				dequeue(&rx_queue);
 			}
 			return true;
 		}
-		printf("[CRC] Transmission error detected.");
+		printf("[CRC] Transmission error detected.\n");
 	}
 }
 
 void handle_communication() {
 	CRCMessage message;
+	
 	//while complete messages are in the buffer, read them.
 	while (rx_queue.count >= CRC_MESSAGE_SIZE) {
-		read_message(&message);
-		GenericMessage *msg = (GenericMessage*) &(message.payload[0]);
-		handle_message(msg);
+		if(read_message(&message)) {
+			GenericMessage *msg = (GenericMessage*) &(message.payload[0]);
+			handle_message(msg);
+		}
 	}
 }
