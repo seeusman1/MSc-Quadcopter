@@ -11,7 +11,6 @@
  */
 void process_key(uint8_t c)
 {
-	printf("Processing key: %c\n", c);
 	switch (c)
 	{
 		case 'q':
@@ -111,13 +110,10 @@ bool detect_header()
 	while (rx_queue.count >= MESSAGE_SIZE)
 	{
 		head = dequeue(&rx_queue);
-		printf("Read byte: 0x%02X \n", head);
 		if (head == CRC_HEADER) {
-			printf("Header found.\n");
 
 			return true;
 		}
-		printf("Dropping byte: c: %c, 0x%x\n", head, head);
 		
 	}
 	return false;
@@ -135,27 +131,21 @@ bool detect_header()
 			printf("No header detected!\n");
 			return false;
 		}	
+		message->header = CRC_HEADER;
+
 		//read the message 
 		for (uint16_t i = 0; i < CRC_PAYLOAD_SIZE; i++) {
 			message->payload[i] = peek(&rx_queue, i);
 		}
-		char buf[CRC_PAYLOAD_SIZE + 1];
-		memcpy(buf, message->payload, CRC_PAYLOAD_SIZE);
-		buf[CRC_PAYLOAD_SIZE] = '\0';
-		printf("Message read: 0x");
-		for (uint16_t i = 0; i < CRC_PAYLOAD_SIZE; i++) {
-			printf("%02X", message->payload[i]);
-		}
-		printf("\n");
+		//read the crc
 		message->crc = peek(&rx_queue, CRC_PAYLOAD_SIZE);
 
 		/* 
 		 * verify the CRC. If the crc is correct, 
-		 * a message has been successfully read and we can pop the bytes.
+		 * a message has been successfully read and we can dequeue the bytes.
 		 * If not, there was a transmission error so try again. 
 		 */
 		if (verify_crc(message)) {
-			printf("CRC verified.\n");
 			for(uint8_t i = 0; i <= CRC_PAYLOAD_SIZE; i++) {
 				dequeue(&rx_queue);
 			}

@@ -47,7 +47,6 @@ char peek(queue *q, uint16_t position) {
 		return 0;
 	}
 	char x = q->Data[(q->first + position) % QUEUE_SIZE];
-	printf("Peeking byte: 0x%02X\n", x);
 
 	return x;
 }
