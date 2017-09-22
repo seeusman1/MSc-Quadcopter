@@ -28,7 +28,6 @@
 #define GREEN		28
 #define BLUE		30
 #define INT_PIN		5
-#define UINT16_MAX 16384
 
 
 bool demo_done;

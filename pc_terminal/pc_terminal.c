@@ -266,11 +266,11 @@ JoystickMessage rs232_createMsg_joystick (int axis[], JoystickPose pose){
 JoystickPose calculate_pose(int axis[], int button[]){
 	JoystickPose pose;
 
-	pose.lift = axis[3];
+	pose.lift = -axis[3];
 	pose.roll = axis[0];
 	pose.pitch = axis[1];
 	pose.yaw = axis[2];
-
+	printf("Lift: %d Roll: %d Pitch: %d Yaw: %d\n", pose.lift, pose.roll, pose.pitch, pose.yaw);
 	return pose;
 
 }
@@ -321,8 +321,23 @@ int main(int argc, char **argv)
 			send_message((char*) &current_JM);
 		}
 
-		if (button[0])
-			break;
+
+		if ((c = term_getchar_nb()) != -1){
+
+			// rs232_putchar(c);
+			ModeMessage msg;
+			msg.id = MODE;
+			msg.mode = c;
+			send_message((char*) &msg);
+
+		}
+
+		if (button[0]) {
+			ModeMessage msg;
+			msg.id = MODE;
+			msg.mode = '1';
+			send_message((char*) &msg);
+		}
 		#endif
 
 		if ((c = term_getchar_nb()) != -1){

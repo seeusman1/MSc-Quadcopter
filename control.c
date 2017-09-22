@@ -12,12 +12,31 @@
 
 #include "in4073.h"
 #include "statemanager/statemanager.h"
+
+#define MAX_SETPOINT 700
 void update_motors(void)
 {					
-	motor[0] = ae[0];
-	motor[1] = ae[1];
-	motor[2] = ae[2];
-	motor[3] = ae[3];
+
+	if (ae[0] > MAX_SETPOINT) {
+		motor[0] = MAX_SETPOINT;
+	} else {
+		motor[0] = ae[0];
+	}
+	if (ae[1] > MAX_SETPOINT) {
+		motor[1] = MAX_SETPOINT;
+	} else {
+		motor[1] = ae[1];
+	}
+	if (ae[2] > MAX_SETPOINT) {
+		motor[2] = MAX_SETPOINT;
+	} else {
+		motor[2] = ae[2];
+	}
+	if (ae[3] > MAX_SETPOINT) {
+		motor[3] = MAX_SETPOINT;
+	} else {
+		motor[3] = ae[3];
+	}
 }
 
 /*
@@ -25,8 +44,8 @@ void update_motors(void)
  * Control step for manual mode. 
  */
 void manual() {
-	int16_t B = 1;
-	int16_t D = 1;
+	// int16_t B = 1;
+	// int16_t D = 1;
 	int32_t Z = current_pose.lift;
 	int32_t L = current_pose.roll;
 	int32_t M = current_pose.pitch;
@@ -37,15 +56,29 @@ void manual() {
 	ae[3] = (-Z/4 + L/2 + N/4 + INT16_MAX) /64;
 }
 
+void panic() {
+	ae[0] = 0;
+	ae[1] = 0;
+	ae[2] = 0;
+	ae[3] = 0;
+}
 
+void safe() {
+	ae[0] = (current_pose.lift/64) + 512;
+	ae[1] = (current_pose.lift/64) + 512;
+	ae[2] = (current_pose.lift/64) + 512;
+	ae[3] = (current_pose.lift/64) + 512;
+}
 
 void run_filters_and_control()
 {
 	switch (get_current_state())
 	{
 		case SAFE:
+			safe();
 			break;
 		case PANIC:
+			panic();
 			break;
 		case MANUAL:
 			manual();

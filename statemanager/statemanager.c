@@ -35,6 +35,9 @@ bool try_transition(state_t to) {
 void init_statemanager() {
 	allowed_transitions[SAFE][MANUAL] = true;
 	allowed_transitions[MANUAL][SAFE] = true;
+	allowed_transitions[MANUAL][PANIC] = true;
+	allowed_transitions[SAFE][PANIC] = true;
+	allowed_transitions[PANIC][SAFE] = true;
 }
 
 
