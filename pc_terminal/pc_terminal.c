@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#include "../protocol.h"
+#include "../crc/crc.h"
 
 /*------------------------------------------------------------
  * console I/O
@@ -80,7 +82,7 @@ int	term_getchar()
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
-#include "../protocol.h"
+
 int serial_device = 0;
 int fd_RS232;
 
@@ -183,7 +185,6 @@ int 	rs232_putchar(char c)
 ModeMessage rs232_createMsg_mode(char c){
 	
 	ModeMessage msg;
-    
 	msg.id = MODE;
 	switch(c){
 		//ESC Button
@@ -225,11 +226,12 @@ ModeMessage rs232_createMsg_mode(char c){
  * Assumes that 9 bytes containing a single message can be found at the specified location. 
  */
 void send_message(char *msg) {
+	CRCMessage message = make_packet(msg);
 	int sts;
-
-	for (uint8_t i = 0; i < MESSAGE_SIZE; i++)
+	uint8_t i;
+	for (i = 0; i < CRC_MESSAGE_SIZE; i++)
 	{	
-		sts=rs232_putchar(msg[i]);
+		sts=rs232_putchar(((char*) (&message))[i]);
 		
 		if (sts != 1){
 			printf("Failed:rs232_sendMsg\n");
