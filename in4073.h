@@ -30,6 +30,7 @@
 #define INT_PIN		5
 #define UINT16_MAX 16384
 
+
 bool demo_done;
 
 
@@ -52,7 +53,7 @@ void clear_timer_flag(void);
 void gpio_init(void);
 
 // Queue
-#define QUEUE_SIZE 256
+#define QUEUE_SIZE 512
 typedef struct {
 	uint8_t Data[QUEUE_SIZE];
 	uint16_t first,last;
@@ -61,6 +62,7 @@ typedef struct {
 void init_queue(queue *q);
 void enqueue(queue *q, char x);
 char dequeue(queue *q);
+char peek(queue *q, uint16_t position);
 
 // UART
 #define RX_PIN_NUMBER  16

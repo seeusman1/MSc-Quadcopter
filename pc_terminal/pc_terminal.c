@@ -12,6 +12,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <inttypes.h>
+#include <stdlib.h>
+
+#include "../protocol.h"
+#include "../crc/crc.h"
+#include "joystick.h"
+
+
+#define JOYSTICK_PRESENT
 
 /*------------------------------------------------------------
  * console I/O
@@ -80,7 +88,7 @@ int	term_getchar()
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
-#include "../protocol.h"
+
 int serial_device = 0;
 int fd_RS232;
 
@@ -173,131 +181,18 @@ int 	rs232_putchar(char c)
 	return result;
 }
 
-// int rs232_sendMsg(queue buf){
-// 	int current = buf.first;
-// 	int sts;
-// 	int q_count = buf.count;
-
-// 	for (current; current < buf.last; ++current)
-// 	{	
-// 		sts=rs232_putchar(Data[current]);
-// 		q_count--;
-		
-// 		if (sts != 1){
-// 			printf("Failed:rs232_sendMsg\n");
-// 		}
-
-// 	}
-// 	if (q_count != 0){
-// 		printf("Queue not emptied\n");
-// 	}
-// }
-/* 
- * Author: Dimitris 
- * 
- */
-void rs232_createMsg_mode(char c, ModeMessage msg){
-	
-	switch(c) {
-		case '0':
-		//MessageId = 1;
-		msg.mode = 0;
-		case '1':
-		//MessageId = 1;
-		msg.mode = 1;
-		case '2':
-		//MessageId = 1;
-		msg.mode = 2;
-		case '3':
-		//MessageId = 1;
-		msg.mode = 3;
-		case '4':
-		//MessageId = 1;
-		msg.mode = 4;
-		case '5':
-		///MessageId = 1;
-		msg.mode = 5;
-		case '6':
-		//MessageId = 1;
-		msg.mode = 6;
-		case '7':
-		//MessageId = 1;
-		msg.mode = 7;
-		case '8':
-		//MessageId = 1;
-		msg.mode = 8;
-
-		default :
-		printf("Invalid Mode!,defaults in 0 mode\n");
-		//MessageId = 1;
-		msg.mode = 0;
-	}
-}
-
-// void rs232_createMsg_joystick (unsigned char axes, JoystickMessage msg){
-
-// 	//Dummy function to be used as Joystick Messaging 
-// 	//msg.MessageId = 2;
-
-// 	//Derive lift,roll,pitch,yaw
-// 	msg.pose.lift = 1;
-
-// 	msg.pose.roll = 1;
-
-// 	msg.pose.pitch = 1;
-
-// 	msg.pose.yaw = 1;
-
-// }
-
-/* Joystick area 
-
-*/
-
-
-// int axis[6];
-// int button[12]; 
-
-// unsigned int  mon_time_ms(void)
-// {
-//         unsigned int    ms;
-//         struct timeval  tv;
-//         struct timezone tz;
-
-//         gettimeofday(&tv, &tz);
-//         ms = 1000 * (tv.tv_sec % 65); // 65 sec wrap around
-//         ms = ms + tv.tv_usec / 1000;
-//         return ms;
-// }
-
-// int joy_init(){
-// 	int fd;
-
-// 	//Initialize Joystick
-// 	if ((fd = open(JS_DEV, O_RDONLY)) < 0) {
-// 		perror("jstest");
-// 		exit(1);
-// 	}
-
-	
-// 	/* non-blocking mode
-// 	 */
-// 	fcntl(fd, F_SETFL, O_NONBLOCK);
-
-// 	return fd;
-// }
-
 /*
  * Author Rutger van den Berg
  * Writes 9 bytes from the provided pointer to UART.
  * Assumes that 9 bytes containing a single message can be found at the specified location. 
  */
 void send_message(char *msg) {
+	CRCMessage message = make_packet(msg);
 	int sts;
-
-	for (uint8_t i = 0; i < MESSAGE_SIZE; i++)
+	uint8_t i;
+	for (i = 0; i < CRC_MESSAGE_SIZE; i++)
 	{	
-		sts=rs232_putchar(msg[i]);
+		sts=rs232_putchar(((char*) (&message))[i]);
 		
 		if (sts != 1){
 			printf("Failed:rs232_sendMsg\n");
@@ -307,13 +202,89 @@ void send_message(char *msg) {
 }
 
 
+
+/********************Joystic Infastructure*********************/
+#define JS_DEV	"/dev/input/js1"
+
+int axis[6];
+int button[12]; 
+
+
+int joy_init(){
+	int fd;
+
+	//Initialize Joystick
+	if ((fd = open(JS_DEV, O_RDONLY)) < 0) {
+		perror("jstest");
+		exit(1);
+	}
+
+	
+	/* non-blocking mode
+	 */
+	fcntl(fd, F_SETFL, O_NONBLOCK);
+
+	return fd;
+}
+
+int joy_read(int * axis, int * button, int fd){
+	struct js_event js;
+
+	while(read(fd, &js, sizeof(struct js_event)) == sizeof(struct js_event)){
+		switch(js.type & ~JS_EVENT_INIT) {
+			case JS_EVENT_BUTTON:
+				button[js.number] = js.value;
+				return 1;
+			case JS_EVENT_AXIS:
+				axis[js.number] = js.value;
+				return 1;
+		}
+	}
+	return 0;
+}
+/*
+* Author D.Patoukas
+*
+*
+*/
+JoystickMessage rs232_createMsg_joystick (int axis[], JoystickPose pose){
+
+	JoystickMessage msg;
+
+	msg.id = JOYSTICK;
+	msg.pose = pose;
+
+	return msg;
+
+}
+
+/*
+* Author D.Patoukas
+*
+*
+*/
+JoystickPose calculate_pose(int axis[], int button[]){
+	JoystickPose pose;
+
+	pose.lift = axis[3];
+	pose.roll = axis[0];
+	pose.pitch = axis[1];
+	pose.yaw = axis[2];
+
+	return pose;
+
+}
+
+
+
+
+
 /*----------------------------------------------------------------
  * main -- execute terminal
  *----------------------------------------------------------------
  */
 int main(int argc, char **argv)
 {
-	// struct js_event js;
 	
 	char	c;
 
@@ -322,7 +293,14 @@ int main(int argc, char **argv)
 	term_initio();
 	rs232_open();
 
+	/*Joystic initialize
+	*/
+	#ifdef JOYSTICK_PRESENT
+	int fd = joy_init();
 
+	JoystickPose currentPose;
+	JoystickMessage current_JM;
+	#endif
 
 	term_puts("Type ^C to exit\n");
 
@@ -334,7 +312,19 @@ int main(int argc, char **argv)
 	/* send & receive
 	 */
 	for (;;)
-	{
+	{	
+
+		#ifdef JOYSTICK_PRESENT
+		if (joy_read(axis,button,fd)){
+			currentPose = calculate_pose(axis,button);
+			current_JM = rs232_createMsg_joystick(axis,currentPose);
+			send_message((char*) &current_JM);
+		}
+
+		if (button[0])
+			break;
+		#endif
+
 		if ((c = term_getchar_nb()) != -1){
 
 			// rs232_putchar(c);

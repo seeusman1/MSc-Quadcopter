@@ -19,6 +19,13 @@ _Static_assert(sizeof(MessageId) == 1, "MessageId size is incorrect.");
 #define MESSAGE_SIZE 9
 
 typedef struct {
+	MessageId id : 8;
+	char padding[PAYLOAD_SIZE];
+} __attribute__ ((__packed__)) GenericMessage;
+_Static_assert(sizeof(GenericMessage) == MESSAGE_SIZE, "GenericMessage size is incorrect.");
+
+
+typedef struct {
 	int16_t lift;
 	int16_t roll;
 	int16_t pitch;

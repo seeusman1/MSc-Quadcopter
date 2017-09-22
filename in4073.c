@@ -17,107 +17,7 @@
 #include "protocol.h"
 #include "assert.h"
 #include "statemanager/statemanager.h"
-/*------------------------------------------------------------------
- * process_key -- process command keys
- *------------------------------------------------------------------
- */
-void process_key(uint8_t c)
-{
-	switch (c)
-	{
-		case 'q':
-			ae[0] += 10;
-			break;
-		case 'a':
-			ae[0] -= 10;
-			if (ae[0] < 0) ae[0] = 0;
-			break;
-		case 'w':
-			ae[1] += 10;
-			break;
-		case 's':
-			ae[1] -= 10;
-			if (ae[1] < 0) ae[1] = 0;
-			break;
-		case 'e':
-			ae[2] += 10;
-			break;
-		case 'd':
-			ae[2] -= 10;
-			if (ae[2] < 0) ae[2] = 0;
-			break;
-		case 'r':
-			ae[3] += 10;
-			break;
-		case 'f':
-			ae[3] -= 10;
-			if (ae[3] < 0) ae[3] = 0;
-			break;
-		case '0':
-			try_transition(SAFE);
-			break;
-		case '1':
-			try_transition(PANIC);
-			break;
-		case '2':
-			try_transition(MANUAL);
-			break;
-		case '3':
-			try_transition(CALIBRATION);
-			break;
-		case '4':
-			try_transition(YAWCONTROL);
-			break;
-		case '5':
-			try_transition(FULLCONTROL);
-			break;
-		case 27:
-			demo_done = true;
-			break;
-		default:
-			nrf_gpio_pin_toggle(RED);
-	}
-}
-
-void handle_joystick(JoystickMessage message) {
-	
-	
-}
-
-/*
- * Author: Rutger van den Berg
- * Reads 9 bytes from the UART RX buffer, and handles the message. 
- * Assumes that at least 9 bytes are in the buffer.
- */
-void handle_message() 
-{
-	assert(rx_queue.count >= MESSAGE_SIZE);
-	uint8_t msg[MESSAGE_SIZE];
-	//Copy the message out of the buffer.
-	for(uint8_t i = 0; i < MESSAGE_SIZE; i++) {
-		msg[i] = dequeue(&rx_queue);
-	}
-	switch (msg[0]) //first byte is the message ID
-	{
-		case JOYSTICK:
-		{
-			JoystickMessage *joymsg = (JoystickMessage*) &msg[0];
-			current_pose = joymsg->pose;
-			printf("Joystick pose is now: %d %d %d %d\n\n", joymsg->pose.lift, 
-				joymsg->pose.roll, joymsg->pose.pitch, joymsg->pose.yaw);
-			break;
-		}
-		case MODE:
-		{
-			ModeMessage *modemsg = (ModeMessage*) msg;
-			process_key(modemsg->mode);
-			break;
-		}
-		default:
-			printf("Received unknown message type: %d.\n", msg[0]);
-	}
-}
-
+#include "communication/communication.h"
 
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
@@ -140,12 +40,7 @@ int main(void)
 
 	while (!demo_done)
 	{
-		//If a full message is in the buffer, read it. 
-		
-		if (rx_queue.count >= MESSAGE_SIZE) {
-			handle_message();
-			
-		}
+		handle_communication();
 		for (int i = 0; i < 1000000; i++) {
 
 		}
