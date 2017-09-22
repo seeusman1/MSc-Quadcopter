@@ -19,7 +19,6 @@ void init_queue(queue *q){
 
 void enqueue(queue *q,char x){
 	if (q->count >= QUEUE_SIZE) {
-		printf("Queue is full!");
 		return;
 	}
 	q->last = (q->last + 1) % QUEUE_SIZE;
