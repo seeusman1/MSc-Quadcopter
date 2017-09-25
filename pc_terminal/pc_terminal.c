@@ -17,7 +17,7 @@
 #include "../protocol.h"
 #include "../crc/crc.h"
 #include "joystick.h"
-
+#include <pthread.h>
 
 #define JOYSTICK_PRESENT
 
@@ -204,11 +204,11 @@ void send_message(char *msg) {
 
 
 /********************Joystic Infastructure*********************/
-#define JS_DEV	"/dev/input/js1"
+#define JS_DEV	"/dev/input/js0"
 
 int axis[6];
 int button[12]; 
-
+int fd;
 
 int joy_init(){
 	int fd;
@@ -228,16 +228,20 @@ int joy_init(){
 }
 
 int joy_read(int * axis, int * button, int fd){
-	struct js_event js;
+	struct js_event js;	
 
-	while(read(fd, &js, sizeof(struct js_event)) == sizeof(struct js_event)){
-		switch(js.type & ~JS_EVENT_INIT) {
+	if(read(fd, &js, sizeof(struct js_event)) == sizeof(struct js_event)){
+		switch(js.type) {
 			case JS_EVENT_BUTTON:
 				button[js.number] = js.value;
 				return 1;
 			case JS_EVENT_AXIS:
 				axis[js.number] = js.value;
 				return 1;
+			case JS_EVENT_INIT:
+				 return 0;
+			default:
+				return 0;
 		}
 	}
 	return 0;
@@ -276,8 +280,45 @@ JoystickPose calculate_pose(int axis[], int button[]){
 }
 
 
+int 	term = 0;
+char	c;
+
+#ifdef JOYSTICK_PRESENT
+JoystickMessage current_JM;
+void *joy_thread(){
+
+	while(!term){
+		JoystickPose currentPose;
+		if (joy_read(axis,button,fd)){
+			currentPose = calculate_pose(axis,button);
+			current_JM = rs232_createMsg_joystick(axis,currentPose);
+			send_message((char*) &current_JM);
+		}
+		if (button[0]){
+			term = 1;
+		}
+	
+	}
+return NULL;
+}
+#endif
 
 
+void *key_thread(){
+
+	while(!term){
+	if ((c = term_getchar_nb()) != -1){
+		// rs232_putchar(c);
+		ModeMessage msg;
+		msg.id = MODE;
+		msg.mode = c;
+		send_message((char*) &msg);
+
+	}
+	}
+	return NULL;
+
+}
 
 /*----------------------------------------------------------------
  * main -- execute terminal
@@ -286,7 +327,7 @@ JoystickPose calculate_pose(int axis[], int button[]){
 int main(int argc, char **argv)
 {
 	
-	char	c;
+	char	ck;
 
 	term_puts("\nTerminal program - Embedded Real-Time Systems\n");
 
@@ -295,12 +336,9 @@ int main(int argc, char **argv)
 
 	/*Joystic initialize
 	*/
-	#ifdef JOYSTICK_PRESENT
-	int fd = joy_init();
 
-	JoystickPose currentPose;
-	JoystickMessage current_JM;
-	#endif
+
+	 pthread_t j_thrd,k_thrd;
 
 	term_puts("Type ^C to exit\n");
 
@@ -308,38 +346,51 @@ int main(int argc, char **argv)
 	 */
 	while ((c = rs232_getchar_nb()) != -1)
 		fputc(c,stderr);
+	
 
-	/* send & receive
-	 */
-	for (;;)
-	{	
 
-		#ifdef JOYSTICK_PRESENT
-		if (joy_read(axis,button,fd)){
-			currentPose = calculate_pose(axis,button);
-			current_JM = rs232_createMsg_joystick(axis,currentPose);
-			send_message((char*) &current_JM);
-		}
+	if(pthread_create(&k_thrd, NULL, key_thread, NULL)) {
 
-		if (button[0])
-			break;
-		#endif
-
-		if ((c = term_getchar_nb()) != -1){
-
-			// rs232_putchar(c);
-			ModeMessage msg;
-			msg.id = MODE;
-			msg.mode = c;
-			send_message((char*) &msg);
-
-		}
-
-		if ((c = rs232_getchar_nb()) != -1)
-			term_putchar(c);
+		fprintf(stderr, "Error creating thread\n");
+		return 1;
 
 	}
 
+	#ifdef JOYSTICK_PRESENT
+	fd = joy_init();
+
+	if(pthread_create(&j_thrd, NULL, joy_thread, NULL)) {
+
+		fprintf(stderr, "Error creating thread\n");
+		return 1;
+
+	}	
+	#endif
+	/* send & receive
+	 */
+	while(!term)	
+	{	
+
+		
+
+		if ((ck = rs232_getchar_nb()) != -1)
+			term_putchar(ck);
+
+	}
+	if(pthread_join(k_thrd, NULL)) {
+
+		fprintf(stderr, "Error joining thread\n");
+		return 2;
+
+	}
+	#ifdef JOYSTICK_PRESENT
+	if(pthread_join(j_thrd, NULL)) {
+
+		fprintf(stderr, "Error joining thread\n");
+		return 2;
+
+	}
+	#endif
 	term_exitio();
 	rs232_close();
 	term_puts("\n<exit>\n");
