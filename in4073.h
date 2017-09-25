@@ -20,6 +20,8 @@
 #include "ml.h"
 #include "app_util_platform.h"
 #include <math.h>
+#include "protocol.h"
+
 
 #define RED		22
 #define YELLOW		24
@@ -30,8 +32,13 @@
 
 bool demo_done;
 
+
+
+
 // Control
 int16_t motor[4],ae[4];
+
+JoystickPose current_pose;
 void run_filters_and_control();
 
 // Timers
