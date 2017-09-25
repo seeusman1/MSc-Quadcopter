@@ -84,8 +84,8 @@ void handle_message(GenericMessage *message)
 		case JOYSTICK:
 		{
 			JoystickMessage *joymsg = (JoystickMessage*) message;
-			printf("Joystick pose is now: %d %d %d %d\n\n", joymsg->pose.lift, 
-				joymsg->pose.roll, joymsg->pose.pitch, joymsg->pose.yaw);
+			current_pose = joymsg->pose;
+			
 			break;
 		}
 		case MODE:
@@ -101,6 +101,8 @@ void handle_message(GenericMessage *message)
 
 // Finding header
 /*
+ * Author Muhammad Usman Saleem
+ * 
  * Finds a CRC header by dequeueing bytes until one matches the CRC header. 
  */
 bool detect_header()
@@ -154,7 +156,9 @@ bool detect_header()
 		printf("[CRC] Transmission error detected.\n");
 	}
 }
-
+/*
+ * Author Muhammad Usman Saleem
+ */
 void handle_communication() {
 	CRCMessage message;
 	

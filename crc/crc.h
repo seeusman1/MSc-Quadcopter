@@ -42,7 +42,7 @@ uint8_t compute_crc8 (char *payload)
 }
 /*
  * Returns true iff the crc in the message is correct. 
- * 
+
  * Calculates 8bit crc over the header plus payload, and compares it to the crc stored in the message. 
  */
 bool verify_crc(CRCMessage *message) {
