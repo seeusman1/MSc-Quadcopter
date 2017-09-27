@@ -39,6 +39,7 @@ bool demo_done;
 int16_t motor[4],ae[4];
 
 JoystickPose current_pose;
+JoystickPose pose_offsets;
 void run_filters_and_control();
 
 // Timers

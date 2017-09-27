@@ -5,6 +5,7 @@
 #include "../crc/crc.h"
 #include "../statemanager/statemanager.h"
 #include "../protocol.h"
+#include "calibration/calibration.h"
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -14,14 +15,16 @@ void process_key(uint8_t c)
 	switch (c)
 	{
 		case 'q':
-			ae[0] += 10;
+			pose_offsets.yaw += 10;
 			break;
 		case 'a':
-			ae[0] -= 10;
-			if (ae[0] < 0) ae[0] = 0;
+			pose_offsets.lift += 10;
+			break;
+		case 'z':
+			pose_offsets.lift -= 10;
 			break;
 		case 'w':
-			ae[1] += 10;
+			pose_offsets.yaw -= 10;
 			break;
 		case 's':
 			ae[1] -= 10;
@@ -85,7 +88,7 @@ void handle_message(GenericMessage *message)
 		{
 			JoystickMessage *joymsg = (JoystickMessage*) message;
 			current_pose = joymsg->pose;
-			
+			calibrate_js();
 			break;
 		}
 		case MODE:

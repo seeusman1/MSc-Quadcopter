@@ -65,7 +65,7 @@ int main(void)
 		if (check_sensor_int_flag()) 
 		{
 			get_dmp_data();
-			calibrate();
+			calibrate_imu();
 			run_filters_and_control();
 		}
 	}	
