@@ -31,6 +31,7 @@ bool try_transition(state_t to) {
 
 /*
  * Author: Rutger van den Berg
+ * Whitelist all allowed state transitions. 
  */
 void init_statemanager() {
 	allowed_transitions[SAFE][MANUAL] = true;
@@ -38,6 +39,8 @@ void init_statemanager() {
 	allowed_transitions[MANUAL][PANIC] = true;
 	allowed_transitions[SAFE][PANIC] = true;
 	allowed_transitions[PANIC][SAFE] = true;
+	allowed_transitions[SAFE][CALIBRATION] = true;
+	allowed_transitions[CALIBRATION][SAFE] = true;
 }
 
 
