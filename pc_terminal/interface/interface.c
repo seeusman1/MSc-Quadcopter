@@ -173,11 +173,16 @@ void	term_putchar(char c)
 
 int	term_getchar_nb()
 {
-        static unsigned char 	line [2];
+        static unsigned char 	line [4];
 
-        if (read(0,line,1)) // note: destructive read
-        		return (int) line[0];
+        if (read(0,line,3)) {// note: destructive read
+        	if (line[1] == '[')
+        	{
+        		return (int) line[2];
+        	}
+        	return (int) line[0];
 
+        }
         return -1;
 }
 
@@ -322,7 +327,57 @@ void *joy_thread(){
 	}
 return NULL;
 }
+/*
+ * Author: D.Patoukas
+ * Reads the inputed character and returns a ModeMessage to be sent 
+ *  
+ */
 
+ModeMessage rs232_createMsg_mode(char c){
+	
+	ModeMessage msg;
+    
+	msg.id = MODE;
+	switch(c){
+		//ESC Button
+		case 27:
+		msg.mode = 27;
+		term = 1;
+		break;
+		case 'q':
+		case 'a':
+		case 'w':
+		case 's':
+		case 'e':
+		case 'd':
+		case 'r':
+		case 'f':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		//ARROW KEYS-only active when arrow key is pressed
+		case 'A':
+		//UP
+		case 'B':
+		//DOWN
+		case 'C':
+		//RIGHT
+		case 'D':
+		//LEFT
+		msg.mode = c;
+		break;
+		default :
+		printf("Invalid Mode!,defaults in 0 mode\n");
+		msg.mode = 0;
+}
+	return msg;
+}
 /*
 * Author D.Patoukas
 *
@@ -330,13 +385,15 @@ return NULL;
 */
 void *key_thread(){
 
+	ModeMessage current_MM;
 	while(!term){
 	if ((c = term_getchar_nb()) != -1){
 		// rs232_putchar(c);
-		ModeMessage msg;
-		msg.id = MODE;
-		msg.mode = c;
-		send_message((char*) &msg);
+
+		if (c != 0 ){
+			current_MM = rs232_createMsg_mode(c);
+			send_message((char*) &current_MM);
+		}
 
 	}
 	}
