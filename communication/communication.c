@@ -41,6 +41,22 @@ void process_key(uint8_t c)
 			ae[3] -= 10;
 			if (ae[3] < 0) ae[3] = 0;
 			break;
+		case 'A':
+		//UP
+		k_off[0] += ARROW_OFFSET;
+		break;
+		case 'B':
+		//DOWN
+		k_off[1] -= ARROW_OFFSET;
+		break;
+		case 'C':
+		//RIGHT
+		k_off[2] += ARROW_OFFSET;
+		break;
+		case 'D':
+		//LEFT
+		k_off[3] -= ARROW_OFFSET;
+		break;
 		case '0':
 			try_transition(SAFE);
 			break;

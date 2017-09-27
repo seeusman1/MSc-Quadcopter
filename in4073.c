@@ -57,6 +57,7 @@ int main(void)
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
+			printf("%d %d %d %d", k_off[0], k_off[1], k_off[2], k_off[3]);
 			printf("| %u \n", get_current_state());
 			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
 			clear_timer_flag();
