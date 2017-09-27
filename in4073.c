@@ -18,6 +18,7 @@
 #include "assert.h"
 #include "statemanager/statemanager.h"
 #include "communication/communication.h"
+#include "calibration/calibration.h"
 
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
@@ -64,6 +65,7 @@ int main(void)
 		if (check_sensor_int_flag()) 
 		{
 			get_dmp_data();
+			calibrate();
 			run_filters_and_control();
 		}
 	}	
