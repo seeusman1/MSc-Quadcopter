@@ -162,7 +162,7 @@ void safe() {
 }
 
 void run_filters_and_control()
-{
+{	
 	switch (get_current_state())
 	{
 		case SAFE:

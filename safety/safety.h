@@ -1,6 +1,7 @@
-#ifndef __STATEMANAGER_H
-#define __STATEMANAGER_H
+#ifndef __SAFETY_SAFETY_H
+#define __SAFETY_SAFETY_H
 #include <stdint.h>
+#include <stdbool.h>
 /*
  * Author Rutger van den Berg
  * Defines functions to check safety conditions.
@@ -23,4 +24,4 @@ void check_safety();
 bool check_battery();
 
 
-#endif //__STATEMANAGER_H
+#endif //__SAFETY_SAFETY_H

@@ -8,7 +8,7 @@
  */ 
 void check_safety() {
 	bool safe = true;
-	safe & check_battery();
+	safe &= check_battery();
 	if (!safe) {
 		try_transition(PANIC);
 		printf("[SAFETY] One or more safety conditions were violated, switching to panic.\n");
@@ -20,10 +20,8 @@ void check_safety() {
  * Returns true iff the voltage is above the threshold specified in the header.
  */
 bool check_battery() {
-	if (bat_volt < BAT_THRESHOLD) {
-		printf("[SAFETY] Battery voltage is %u, which is too low. \n", bat_volt);
+	if(get_current_state() > SAFE && bat_volt < BAT_THRESHOLD) {
 		return false;
 	}
-
 	return true;
 }

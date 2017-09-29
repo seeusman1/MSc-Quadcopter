@@ -19,7 +19,7 @@
 #include "statemanager/statemanager.h"
 #include "communication/communication.h"
 #include "calibration/calibration.h"
-
+#include "safety/safety.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -74,6 +74,7 @@ int main(void)
 		{
 			get_dmp_data();
 			calibrate_imu();
+			
 			run_filters_and_control();
 		}
 	}	
