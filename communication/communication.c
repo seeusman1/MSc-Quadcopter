@@ -44,6 +44,14 @@ void process_key(uint8_t c)
 			ae[3] -= 10;
 			if (ae[3] < 0) ae[3] = 0;
 			break;
+		case 'u':
+			P += 1;
+			break;
+		case 'j':
+			if(P > 0) {
+				P -= 1;
+			}
+			break;
 		case '0':
 			try_transition(SAFE);
 			break;

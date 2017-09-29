@@ -15,7 +15,7 @@
 
 #define MAX_SETPOINT 800
 #define MIN_SETPOINT 100 // needs to check at what value rotor starts spinning
-
+uint32_t P = 4;
 
 void update_motors(void)
 {					
@@ -95,12 +95,12 @@ void update_motors(void)
 }
 
 void yaw_control() {
-	int32_t Z = (current_pose.lift + INT16_MAX)/64;
+	int32_t Z = (current_pose.lift + INT16_MAX)/82;
 	int32_t L = (current_pose.roll)/64;
 	int32_t M = (current_pose.pitch)/64;
 	int32_t N = (current_pose.yaw)/64;
 	
-	int32_t P =4;
+	
 	int32_t A = 512 / INT16_MAX ; 
 	int32_t N_new = P * (N-(A * sr));// A is amplification factor i.e. A*sr = N 
 	if (Z >= MIN_SETPOINT){
