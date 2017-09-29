@@ -75,10 +75,10 @@ void update_motors(void)
 	
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = -Z + M/2 - N/4;
-		ae[1] = -Z -L/2 + N/4;
-		ae[2] = -Z - M/2 - N/4;
-		ae[3] = -Z + L/2 + N/4;
+		ae[0] = Z + M/2 - N/4;
+		ae[1] = Z -L/2 + N/4;
+		ae[2] = Z - M/2 - N/4;
+		ae[3] = Z + L/2 + N/4;
 	}else {
 		ae[0] = 0;
 		ae[1] = 0;
@@ -104,10 +104,10 @@ void yaw_control() {
 	int32_t A = 512 / INT16_MAX ; 
 	int32_t N_new = P * (N-(A * sr));// A is amplification factor i.e. A*sr = N 
 	
-	ae[0] = -Z + M/2 - N_new/4;
-	ae[1] = -Z -L/2 + N_new/4;
-	ae[2] = -Z - M/2 - N_new/4;
-	ae[3] = -Z + L/2 + N_new/4;
+	ae[0] = Z + M/2 - N_new/4;
+	ae[1] = Z -L/2 + N_new/4;
+	ae[2] = Z - M/2 - N_new/4;
+	ae[3] = Z + L/2 + N_new/4;
 		
 
 }
@@ -144,10 +144,10 @@ void panic() {
 }
 
 void safe() {
-	ae[0] = (current_pose.lift/64) + 512;
-	ae[1] = (current_pose.lift/64) + 512;
-	ae[2] = (current_pose.lift/64) + 512;
-	ae[3] = (current_pose.lift/64) + 512;
+	ae[0] = 0;//(current_pose.lift/64) + 512;
+	ae[1] = 0;//(current_pose.lift/64) + 512;
+	ae[2] = 0;//(current_pose.lift/64) + 512;
+	ae[3] = 0;//(current_pose.lift/64) + 512;
 }
 
 void run_filters_and_control()

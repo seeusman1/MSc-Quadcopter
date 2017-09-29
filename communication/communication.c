@@ -62,6 +62,9 @@ void process_key(uint8_t c)
 		case 27:
 			demo_done = true;
 			break;
+		case (char) 4: //ASCII end of transmission, using it for killswitch.
+			try_transition(PANIC);
+			break;
 		default:
 			nrf_gpio_pin_toggle(RED);
 	}

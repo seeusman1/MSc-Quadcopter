@@ -41,6 +41,8 @@ void init_statemanager() {
 	allowed_transitions[PANIC][SAFE] = true;
 	allowed_transitions[SAFE][CALIBRATION] = true;
 	allowed_transitions[CALIBRATION][SAFE] = true;
+	allowed_transitions[SAFE][YAWCONTROL] = true;
+	allowed_transitions[YAWCONTROL][SAFE] = true;
 }
 
 

@@ -53,7 +53,7 @@ int main(void)
 			read_baro();
 
 			printf("%10ld | ", get_time_us());
-			printf("%3d %3d %3d %3d | ",ae[0],ae[1],ae[2],ae[3]);
+			printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
