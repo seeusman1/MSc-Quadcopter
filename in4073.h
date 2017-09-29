@@ -33,7 +33,8 @@
 bool demo_done;
 
 
-
+//Keyboard Arrow Offsets
+#define JS_CALIBRATION_STEP 50
 
 // Control
 int16_t motor[4],ae[4];

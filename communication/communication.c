@@ -15,16 +15,16 @@ void process_key(uint8_t c)
 	switch (c)
 	{
 		case 'q':
-			pose_offsets.yaw += 10;
+			pose_offsets.yaw += JS_CALIBRATION_STEP;
 			break;
 		case 'a':
-			pose_offsets.lift += 10;
+			pose_offsets.lift += JS_CALIBRATION_STEP;
 			break;
 		case 'z':
-			pose_offsets.lift -= 10;
+			pose_offsets.lift -= JS_CALIBRATION_STEP;
 			break;
 		case 'w':
-			pose_offsets.yaw -= 10;
+			pose_offsets.yaw -= JS_CALIBRATION_STEP;
 			break;
 		case 's':
 			ae[1] -= 10;
@@ -51,6 +51,23 @@ void process_key(uint8_t c)
 			if(P > 0) {
 				P -= 1;
 			}
+			break;
+		case 28:
+			//UP
+			printf("Increment\n");
+			pose_offsets.pitch += JS_CALIBRATION_STEP;
+			break;
+		case 29:
+			//DOWN
+			pose_offsets.pitch -= JS_CALIBRATION_STEP;
+			break;
+		case 30:
+			//RIGHT
+			pose_offsets.roll += JS_CALIBRATION_STEP;
+			break;
+		case 31:
+			//LEFT
+			pose_offsets.roll -= JS_CALIBRATION_STEP;
 			break;
 		case '0':
 			try_transition(SAFE);
