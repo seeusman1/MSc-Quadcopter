@@ -41,21 +41,22 @@ void process_key(uint8_t c)
 			ae[3] -= 10;
 			if (ae[3] < 0) ae[3] = 0;
 			break;
-		case 'A':
+		case 28:
 		//UP
+		printf("Increment\n");
 		k_off[0] += ARROW_OFFSET;
 		break;
-		case 'B':
+		case 29:
 		//DOWN
-		k_off[1] -= ARROW_OFFSET;
+		k_off[0] -= ARROW_OFFSET;
 		break;
-		case 'C':
+		case 30:
 		//RIGHT
-		k_off[2] += ARROW_OFFSET;
+		k_off[1] += ARROW_OFFSET;
 		break;
-		case 'D':
+		case 31:
 		//LEFT
-		k_off[3] -= ARROW_OFFSET;
+		k_off[1] -= ARROW_OFFSET;
 		break;
 		case '0':
 			try_transition(SAFE);

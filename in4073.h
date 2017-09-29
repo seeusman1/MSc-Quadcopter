@@ -35,7 +35,7 @@ bool demo_done;
 
 //Keyboard Arrow Offsets
 #define ARROW_OFFSET 50
-int16_t k_off[4];
+int k_off[2];
 
 // Control
 int16_t motor[4],ae[4];

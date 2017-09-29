@@ -173,12 +173,30 @@ void	term_putchar(char c)
 
 int	term_getchar_nb()
 {
-        static unsigned char 	line [4];
+       static unsigned char line [4];
 
-        if (read(0,line,3)) {// note: destructive read
+        if (read(0,line,3)) {
         	if (line[1] == '[')
-        	{
-        		return (int) line[2];
+        	{	
+        		line[1] = 0;
+        		switch (line[2]){
+			        //ARROW KEYS-only active when arrow key is pressed
+					case 'A':
+					//UP
+					return 28;
+					case 'B':
+					//DOWN
+					return 29;
+					case 'C':
+					//RIGHT
+					return 30;
+					case 'D':
+					//LEFT
+					return 31;
+					default:
+					return 0;
+        		}
+        		
         	}
         	return (int) line[0];
 
@@ -361,16 +379,24 @@ ModeMessage rs232_createMsg_mode(char c){
 		case '6':
 		case '7':
 		case '8':
-		//ARROW KEYS-only active when arrow key is pressed
-		case 'A':
-		//UP
-		case 'B':
-		//DOWN
-		case 'C':
-		//RIGHT
-		case 'D':
-		//LEFT
 		msg.mode = c;
+		break;
+		//ARROW KEYS-only active when arrow key is pressed
+		case 28:
+		//UP
+		msg.mode = 28;
+		break;
+		case 29:
+		//DOWN
+		msg.mode = 29;
+		break;
+		case 30:
+		//RIGHT
+		msg.mode = 30;
+		break;
+		case 31:
+		//LEFT
+		msg.mode = 31;
 		break;
 		default :
 		printf("Invalid Mode!,defaults in 0 mode\n");
@@ -378,6 +404,10 @@ ModeMessage rs232_createMsg_mode(char c){
 }
 	return msg;
 }
+		
+		
+		
+		
 /*
 * Author D.Patoukas
 *
