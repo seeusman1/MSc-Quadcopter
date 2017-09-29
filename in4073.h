@@ -34,8 +34,7 @@ bool demo_done;
 
 
 //Keyboard Arrow Offsets
-#define ARROW_OFFSET 50
-int k_off[2];
+#define JS_CALIBRATION_STEP 50
 
 // Control
 int16_t motor[4],ae[4];
