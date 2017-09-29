@@ -19,7 +19,7 @@
 #include "statemanager/statemanager.h"
 #include "communication/communication.h"
 #include "calibration/calibration.h"
-
+#include "safety/safety.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -38,7 +38,15 @@ int main(void)
 	init_statemanager();
 	uint32_t counter = 0;
 	demo_done = false;
+	current_pose.lift = 0;
+	current_pose.yaw = 0;
+	current_pose.roll = 0;
+	current_pose.pitch = 0;
 
+	pose_offsets.lift = 0;
+	pose_offsets.yaw = 0;
+	pose_offsets.roll = 0;
+	pose_offsets.pitch = 0;
 	while (!demo_done)
 	{
 		handle_communication();
@@ -53,7 +61,7 @@ int main(void)
 			read_baro();
 
 			printf("%10ld | ", get_time_us());
-			printf("%3d %3d %3d %3d | ",ae[0],ae[1],ae[2],ae[3]);
+			printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
@@ -66,7 +74,8 @@ int main(void)
 		if (check_sensor_int_flag()) 
 		{
 			get_dmp_data();
-			calibrate();
+			calibrate_imu();
+			
 			run_filters_and_control();
 		}
 	}	

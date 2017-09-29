@@ -118,7 +118,7 @@ int 	rs232_putchar(char c)
 
 
 
-#define JS_DEV	"/dev/input/js0"
+#define JS_DEV	"/dev/input/js1"
 
 //Joystic Globals
 int axis[6];
@@ -312,7 +312,7 @@ JoystickMessage rs232_createMsg_joystick (int axis[], JoystickPose pose){
 JoystickPose calculate_pose(int axis[], int button[]){
 	JoystickPose pose;
 
-	pose.lift = axis[3];
+	pose.lift = -axis[3];
 	pose.roll = axis[0];
 	pose.pitch = axis[1];
 	pose.yaw = axis[2];
@@ -339,7 +339,10 @@ void *joy_thread(){
 			send_message((char*) &current_JM);
 		}
 		if (button[0]){
-			term = 1;
+			ModeMessage msg;
+			msg.id = MODE;
+			msg.mode = (char) 4;
+			send_message((char*) &msg);
 		}
 	
 	}

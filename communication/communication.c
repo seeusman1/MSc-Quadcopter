@@ -5,6 +5,7 @@
 #include "../crc/crc.h"
 #include "../statemanager/statemanager.h"
 #include "../protocol.h"
+#include "calibration/calibration.h"
 /*------------------------------------------------------------------
  * process_key -- process command keys
  *------------------------------------------------------------------
@@ -14,14 +15,16 @@ void process_key(uint8_t c)
 	switch (c)
 	{
 		case 'q':
-			ae[0] += 10;
+			pose_offsets.yaw += 10;
 			break;
 		case 'a':
-			ae[0] -= 10;
-			if (ae[0] < 0) ae[0] = 0;
+			pose_offsets.lift += 10;
+			break;
+		case 'z':
+			pose_offsets.lift -= 10;
 			break;
 		case 'w':
-			ae[1] += 10;
+			pose_offsets.yaw -= 10;
 			break;
 		case 's':
 			ae[1] -= 10;
@@ -41,23 +44,31 @@ void process_key(uint8_t c)
 			ae[3] -= 10;
 			if (ae[3] < 0) ae[3] = 0;
 			break;
+		case 'u':
+			P += 1;
+			break;
+		case 'j':
+			if(P > 0) {
+				P -= 1;
+			}
+			break;
 		case 28:
-		//UP
-		printf("Increment\n");
-		k_off[0] += ARROW_OFFSET;
-		break;
+			//UP
+			printf("Increment\n");
+			k_off[0] += ARROW_OFFSET;
+			break;
 		case 29:
-		//DOWN
-		k_off[0] -= ARROW_OFFSET;
-		break;
+			//DOWN
+			k_off[0] -= ARROW_OFFSET;
+			break;
 		case 30:
-		//RIGHT
-		k_off[1] += ARROW_OFFSET;
-		break;
+			//RIGHT
+			k_off[1] += ARROW_OFFSET;
+			break;
 		case 31:
-		//LEFT
-		k_off[1] -= ARROW_OFFSET;
-		break;
+			//LEFT
+			k_off[1] -= ARROW_OFFSET;
+			break;
 		case '0':
 			try_transition(SAFE);
 			break;
@@ -78,6 +89,9 @@ void process_key(uint8_t c)
 			break;
 		case 27:
 			demo_done = true;
+			break;
+		case (char) 4: //ASCII end of transmission, using it for killswitch.
+			try_transition(PANIC);
 			break;
 		default:
 			nrf_gpio_pin_toggle(RED);
@@ -102,7 +116,7 @@ void handle_message(GenericMessage *message)
 		{
 			JoystickMessage *joymsg = (JoystickMessage*) message;
 			current_pose = joymsg->pose;
-			
+			calibrate_js();
 			break;
 		}
 		case MODE:
