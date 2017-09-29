@@ -1,5 +1,6 @@
 #include "statemanager.h"
 #include "../in4073.h"
+#include "../calibration/calibration.h"
 bool allowed_transitions [MODE_COUNT][MODE_COUNT];
 state_t current_state = SAFE;
 
@@ -9,6 +10,10 @@ state_t current_state = SAFE;
  */ 
 bool check_conditions(state_t to) {
 	if(!allowed_transitions[current_state][to]) {
+		return false;
+	}
+
+	if(to == YAWCONTROL && !is_calibrated()) {
 		return false;
 	}
 	//Add states with specific pre-conditions here
@@ -41,6 +46,9 @@ void init_statemanager() {
 	allowed_transitions[PANIC][SAFE] = true;
 	allowed_transitions[SAFE][CALIBRATION] = true;
 	allowed_transitions[CALIBRATION][SAFE] = true;
+	allowed_transitions[SAFE][YAWCONTROL] = true;
+	allowed_transitions[YAWCONTROL][SAFE] = true;
+	allowed_transitions[YAWCONTROL][PANIC] = true;
 }
 
 

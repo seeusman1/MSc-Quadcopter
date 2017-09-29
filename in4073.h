@@ -39,8 +39,9 @@ bool demo_done;
 int16_t motor[4],ae[4];
 
 JoystickPose current_pose;
+JoystickPose pose_offsets;
 void run_filters_and_control();
-
+extern uint32_t P;
 // Timers
 #define TIMER_PERIOD	50 //50ms=20Hz (MAX 23bit, 4.6h)
 void timers_init(void);
