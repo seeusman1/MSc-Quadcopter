@@ -103,12 +103,17 @@ void yaw_control() {
 	int32_t P =4;
 	int32_t A = 512 / INT16_MAX ; 
 	int32_t N_new = P * (N-(A * sr));// A is amplification factor i.e. A*sr = N 
-	
-	ae[0] = Z + M/2 - N_new/4;
-	ae[1] = Z -L/2 + N_new/4;
-	ae[2] = Z - M/2 - N_new/4;
-	ae[3] = Z + L/2 + N_new/4;
-		
+	if (Z >= MIN_SETPOINT){
+		ae[0] = Z + M/2 - N_new/4;
+		ae[1] = Z -L/2 + N_new/4;
+		ae[2] = Z - M/2 - N_new/4;
+		ae[3] = Z + L/2 + N_new/4;
+	}else {
+		ae[0] = 0;
+		ae[1] = 0;
+		ae[2] = 0;
+		ae[3] = 0;
+	}		
 
 }
 
@@ -134,13 +139,19 @@ void full_control() {
 
 
 
-
+int decrement(int i) {
+	int j = i - 5;
+	if (j < 0) {
+		j = 0;
+	}
+	return j;
+}
 
 void panic() {
-	ae[0] = 0;
-	ae[1] = 0;
-	ae[2] = 0;
-	ae[3] = 0;
+	ae[0] = decrement(ae[0]);
+	ae[1] = decrement(ae[1]);
+	ae[2] = decrement(ae[2]);
+	ae[3] = decrement(ae[3]);
 }
 
 void safe() {
@@ -165,6 +176,7 @@ void run_filters_and_control()
 		case CALIBRATION:
 			break;
 		case YAWCONTROL:
+			yaw_control();
 			break;
 		case FULLCONTROL:
 			break;

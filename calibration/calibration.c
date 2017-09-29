@@ -7,6 +7,11 @@ int16_t sax_offset, say_offset, saz_offset;
 //is true iff the IMU has been calibrated since boot
 bool calibrated = false;
 
+bool is_calibrated() {
+	return calibrated;
+}
+
+
 
 /*
  * Author Rutger van den Berg
@@ -41,6 +46,7 @@ void calibrate_imu() {
 		sax_offset = -sax;
 		say_offset = -say;
 		saz_offset = -saz;
+		calibrated = true;
 	} else {
 		sp = calibrate_value(sp, sp_offset);
 		sq = calibrate_value(sq, sq_offset);
@@ -50,7 +56,7 @@ void calibrate_imu() {
 		say = calibrate_value(say, say_offset);
 		saz = calibrate_value(saz, saz_offset);
 
-		calibrated = true;
+		
 	}
 }
 

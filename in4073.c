@@ -38,7 +38,15 @@ int main(void)
 	init_statemanager();
 	uint32_t counter = 0;
 	demo_done = false;
+	current_pose.lift = 0;
+	current_pose.yaw = 0;
+	current_pose.roll = 0;
+	current_pose.pitch = 0;
 
+	pose_offsets.lift = 0;
+	pose_offsets.yaw = 0;
+	pose_offsets.roll = 0;
+	pose_offsets.pitch = 0;
 	while (!demo_done)
 	{
 		handle_communication();
