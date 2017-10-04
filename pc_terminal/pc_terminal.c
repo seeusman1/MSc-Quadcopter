@@ -112,13 +112,6 @@ int main(int argc, char **argv)
 	#ifdef JOYSTICK_PRESENT
 	fd = joy_init();
 	setup_js();
-
-	// if(pthread_create(&j_thrd, NULL, joy_thread, NULL)) {
-
-	// 	fprintf(stderr, "Error creating thread\n");
-	// 	return 1;
-
-	// }	
 	#endif
 	/* send & receive
 	 */
@@ -137,15 +130,11 @@ int main(int argc, char **argv)
 		return 2;
 
 	}
+
 	#ifdef JOYSTICK_PRESENT
-	// if(pthread_join(j_thrd, NULL)) {
-
-	// 	fprintf(stderr, "Error joining thread\n");
-	// 	return 2;
-
-	// }
-	#endif
 	close_js();
+	#endif
+
 	term_exitio();
 	rs232_close();
 	term_puts("\n<exit>\n");

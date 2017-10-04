@@ -278,17 +278,17 @@ int joy_init(){
 int joy_read(int * axis, int * button, int fd){
 	struct js_event js;	
 
-	if(read(fd, &js, sizeof(struct js_event)) ==  sizeof(struct js_event)){
+	if(read(fd, &js, sizeof(struct js_event)) ==  sizeof(struct js_event)) {
+		JS_FLAGS |= js.type;
 		switch(js.type) {
 			case JS_EVENT_BUTTON:
-				JS_FLAGS |= JS_EVENT_BUTTON;
 				button[js.number] = js.value;
 				return 1;
 			case JS_EVENT_AXIS:
-				JS_FLAGS |= JS_EVENT_AXIS;
 				axis[js.number] = js.value;
 				return 1;
 			case JS_EVENT_INIT:
+				printf("Unexpected JS_EVENT_INIT read...\n");
 				 return 0;
 			default:
 				return 0;
@@ -333,28 +333,29 @@ JoystickPose calculate_pose(int axis[], int button[]){
 
 
 /*
-* Author D.Patoukas
-*
-*
+* Author: Rutger van den Berg
+* 
+* Timer handler for the joystick. Reads all joystick events, 
+* and then sends the most recent value for the axes or buttons
+* if they were read.
 */
 JoystickMessage current_JM;
+JoystickPose currentPose;
 void joy_handler(union sigval val) {
 	JS_FLAGS = 0;
-	JoystickPose currentPose;
 	while (joy_read(axis,button,fd)){
 
 	}
 	if (JS_FLAGS & JS_EVENT_BUTTON){
-			ModeMessage msg;
-			msg.id = MODE;
-			msg.mode = (char) 4;
-			send_message((char*) &msg);
+		ModeMessage msg;
+		msg.id = MODE;
+		msg.mode = (char) 4;
+		send_message((char*) &msg);
 	} 
 	if (JS_FLAGS & JS_EVENT_AXIS) { 	
-			currentPose = calculate_pose(axis,button);
-			current_JM = rs232_createMsg_joystick(axis,currentPose);
-			send_message((char*) &current_JM);
-			// printf("%3d %3d %3d %3d \n ",currentPose.lift,currentPose.roll,currentPose.yaw,currentPose.pitch);
+		currentPose = calculate_pose(axis,button);
+		current_JM = rs232_createMsg_joystick(axis,currentPose);
+		send_message((char*) &current_JM);
 	}
 	
 }
