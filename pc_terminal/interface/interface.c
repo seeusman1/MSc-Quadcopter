@@ -130,6 +130,7 @@ int 	rs232_putchar(char c)
 int axis[6];
 int button[12]; 
 int fd;
+int JS_FLAGS = 0;
 
 //terminal termination
 int 	term;
@@ -277,12 +278,14 @@ int joy_init(){
 int joy_read(int * axis, int * button, int fd){
 	struct js_event js;	
 
-	if(read(fd, &js, sizeof(struct js_event)) == sizeof(struct js_event)){
+	if(read(fd, &js, sizeof(struct js_event)) ==  sizeof(struct js_event)){
 		switch(js.type) {
 			case JS_EVENT_BUTTON:
+				JS_FLAGS |= JS_EVENT_BUTTON;
 				button[js.number] = js.value;
 				return 1;
 			case JS_EVENT_AXIS:
+				JS_FLAGS |= JS_EVENT_AXIS;
 				axis[js.number] = js.value;
 				return 1;
 			case JS_EVENT_INIT:
@@ -336,18 +339,24 @@ JoystickPose calculate_pose(int axis[], int button[]){
 */
 JoystickMessage current_JM;
 void joy_handler(union sigval val) {
+	JS_FLAGS = 0;
 	JoystickPose currentPose;
-	if (joy_read(axis,button,fd)){
-		currentPose = calculate_pose(axis,button);
-		current_JM = rs232_createMsg_joystick(axis,currentPose);
-		send_message((char*) &current_JM);
+	while (joy_read(axis,button,fd)){
+
 	}
-	if (button[0]){
-		ModeMessage msg;
-		msg.id = MODE;
-		msg.mode = (char) 4;
-		send_message((char*) &msg);
+	if (JS_FLAGS & JS_EVENT_BUTTON){
+			ModeMessage msg;
+			msg.id = MODE;
+			msg.mode = (char) 4;
+			send_message((char*) &msg);
+	} 
+	if (JS_FLAGS & JS_EVENT_AXIS) { 	
+			currentPose = calculate_pose(axis,button);
+			current_JM = rs232_createMsg_joystick(axis,currentPose);
+			send_message((char*) &current_JM);
+			// printf("%3d %3d %3d %3d \n ",currentPose.lift,currentPose.roll,currentPose.yaw,currentPose.pitch);
 	}
+	
 }
 /*
  * Author: D.Patoukas

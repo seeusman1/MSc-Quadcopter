@@ -55,7 +55,7 @@ void setup_js() {
         in.it_value.tv_sec = 1;
         in.it_value.tv_nsec = 0;
         in.it_interval.tv_sec = 0;
-        in.it_interval.tv_nsec = 50000000;
+        in.it_interval.tv_nsec = 10000000;
         //issue the periodic timer request here.
         Ret = timer_settime(timerid, 0, &in, &out);
         if(Ret != 0) {
