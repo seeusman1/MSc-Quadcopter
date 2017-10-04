@@ -9,6 +9,7 @@
  */
 
 #include "in4073.h"
+#include "../protocol.h"
 
 bool txd_available = true;
 
@@ -22,16 +23,73 @@ void uart_put(uint8_t byte)
 	NVIC_EnableIRQ(UART0_IRQn);
 }
 
-// Reroute printf
+
+/*
+*D.Patoukas 
+*Rerouting printf to send print commands PC.
+*Message size is limited to PrintMessage specificarions
+*as defined in protocol.h
+*/
+
+int send_print_msg(const char *p)
+{
+	PrintMessage m;
+	m.id = PRINT;
+	
+	for (int i = 0; i < sizeof(PrintMessage)-1; i++)
+	{
+		m.data[i] = 0;
+	}	
+		for (uint8_t i = 0; i < sizeof(PrintMessage)-1 ; i++)
+		{
+			m.data[i] = *p++;
+		}
+
+	
+	uart_put(m.id);
+	for (int i = 0; i < sizeof(PrintMessage)-1; i++)
+	{
+		uart_put(m.data[i]);
+	}
+
+	
+	return 1;
+}
+
 int _write(int file, const char * p_char, int len)
 {
-	int i;
-	for (i = 0; i < len; i++)
+	char s_char[PAYLOAD_SIZE];
+	int toSend = len;
+	//printf("LEN:%d\n",len);
+	for (int j = 0; j < (len/PAYLOAD_SIZE)+1; j++)
 	{
-		uart_put(*p_char++);
+		for (int k = 0; k < PAYLOAD_SIZE; k++)
+		{
+			s_char[k] = 0;
+		}
+
+		int i = 0;
+
+		while ((i< PAYLOAD_SIZE)&&(toSend>0)) {	
+			s_char[i] = *p_char++;
+			toSend--;
+			i++;
+		}
+		send_print_msg(s_char);
 	}
 	return len;
 }
+
+// // Reroute printf
+// int _write(int file, const char * p_char, int len)
+// {
+// 	int i;
+// 	for (i = 0; i < len; i++)
+// 	{
+// 		uart_put(*p_char++);
+// 	}
+// 	return len;
+// }
 
 
 void UART0_IRQHandler(void)

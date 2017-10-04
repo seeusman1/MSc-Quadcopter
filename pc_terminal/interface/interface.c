@@ -118,7 +118,7 @@ int 	rs232_putchar(char c)
 
 
 
-#define JS_DEV	"/dev/input/js1"
+#define JS_DEV	"/dev/input/js0"
 
 //Joystic Globals
 int axis[6];
