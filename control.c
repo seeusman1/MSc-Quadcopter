@@ -14,7 +14,7 @@
 #include "statemanager/statemanager.h"
 
 #define MAX_SETPOINT 800
-#define MIN_SETPOINT 100 // needs to check at what value rotor starts spinning
+#define MIN_SETPOINT 168 // needs to check at what value rotor starts spinning
 uint32_t P = 4;
 
 void update_motors(void)
@@ -22,28 +22,28 @@ void update_motors(void)
 	if (ae[0] > MAX_SETPOINT) {
 		motor[0] = MAX_SETPOINT;
 	} else if (ae[0]< MIN_SETPOINT) {
-		motor[0] = 0;
+		motor[0] = MIN_SETPOINT;
 	} else {
 		motor[0] = ae[0];
 	}
 	if (ae[1] > MAX_SETPOINT) {
 		motor[1] = MAX_SETPOINT;
 	} else if (ae[1]< MIN_SETPOINT) {
-		motor[1] = 0;
+		motor[1] = MIN_SETPOINT;
 	} else {
 		motor[1] = ae[1];
 	}
 	if (ae[2] > MAX_SETPOINT) {
 		motor[2] = MAX_SETPOINT;
 	} else if (ae[2]< MIN_SETPOINT) {
-		motor[2] = 0;
+		motor[2] = MIN_SETPOINT;
 	} else {
 		motor[2] = ae[2];
 	}
 	if (ae[3] > MAX_SETPOINT) {
 		motor[3] = MAX_SETPOINT;
 	} else if (ae[3]< MIN_SETPOINT) {
-		motor[3] = 0;
+		motor[3] = MIN_SETPOINT;
 	} else {
 		motor[3] = ae[3];
 	}
