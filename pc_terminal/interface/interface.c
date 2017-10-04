@@ -9,6 +9,12 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <time.h>
+
+#include <signal.h>
+#include <pthread.h>
+#include <errno.h>
+
+
 #include "../joystick.h"
 #include "../../protocol.h"
 #include "../../crc/crc.h"
@@ -329,24 +335,19 @@ JoystickPose calculate_pose(int axis[], int button[]){
 *
 */
 JoystickMessage current_JM;
-void *joy_thread(){
-
-	while(!term){
-		JoystickPose currentPose;
-		if (joy_read(axis,button,fd)){
-			currentPose = calculate_pose(axis,button);
-			current_JM = rs232_createMsg_joystick(axis,currentPose);
-			send_message((char*) &current_JM);
-		}
-		if (button[0]){
-			ModeMessage msg;
-			msg.id = MODE;
-			msg.mode = (char) 4;
-			send_message((char*) &msg);
-		}
-	
+void joy_handler(union sigval val) {
+	JoystickPose currentPose;
+	if (joy_read(axis,button,fd)){
+		currentPose = calculate_pose(axis,button);
+		current_JM = rs232_createMsg_joystick(axis,currentPose);
+		send_message((char*) &current_JM);
 	}
-return NULL;
+	if (button[0]){
+		ModeMessage msg;
+		msg.id = MODE;
+		msg.mode = (char) 4;
+		send_message((char*) &msg);
+	}
 }
 /*
  * Author: D.Patoukas
