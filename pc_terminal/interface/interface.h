@@ -51,7 +51,7 @@ JoystickMessage rs232_createMsg_joystick (int axis[], JoystickPose pose);
 
 JoystickPose calculate_pose(int axis[], int button[]);
 
-void *joy_thread();
+void joy_handler(union sigval val);
 
 void *key_thread();
 

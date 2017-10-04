@@ -65,6 +65,7 @@ int main(void)
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
+			printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
 			printf("| %u \n", get_current_state());
 			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
 			clear_timer_flag();
