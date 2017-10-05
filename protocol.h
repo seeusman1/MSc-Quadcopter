@@ -12,7 +12,8 @@
 typedef enum {
 	JOYSTICK,
 	MODE,
-	PRINT
+	PRINT,
+	LOG
 } __attribute__ ((__packed__)) MessageId;
 _Static_assert(sizeof(MessageId) == 1, "MessageId size is incorrect.");
 
@@ -55,4 +56,11 @@ typedef struct {
 	char data[PAYLOAD_SIZE];
 } PrintMessage;
 _Static_assert(sizeof(PrintMessage) == MESSAGE_SIZE, "PrintMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	char data[PAYLOAD_SIZE];
+} __attribute__((packed)) LogMessage;
+_Static_assert(sizeof(LogMessage) == MESSAGE_SIZE, "LogMessage size is incorrect.");
+
 #endif //__PROTOCOL_H
