@@ -5,9 +5,11 @@
 #define JOYSTICK_PRESENT
 
 #include "interface/interface.h"
+#include "messaging/messaging.h"
 #include "../protocol.h"
 //#include "../crc/crc.h"
 
+queue receive_queue;
 //Joystic Globals
 int axis[6];
 int button[12]; 
