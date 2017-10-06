@@ -119,7 +119,7 @@ void yaw_control() {
 	int32_t M = (current_pose.pitch)/64;
 	int32_t N = (current_pose.yaw)/64;
 	
-	int32_t N_new = P * (N-(sr/64)); // P controller	
+	int32_t N_new = P * (N-(sr/32)); // P controller	
 
 	if (Z >= MIN_SETPOINT){
 	
@@ -157,17 +157,17 @@ void full_control() {
 	//uint8_t A1=1;
 	//uint8_t A2=1;
 	
-	//int32_t N_new = P * (N-(sr/64)); // P controller for Yaw
-	int32_t L_new = P2 * (P1 * (L - phi/32) - sp/32); // Cascaded P controller for Roll 
-	//int32_t M_new = P2 * (P1 * (M - theta/32) - sq/32);//Cascaded P controller for Pitch
-
+	N = P * (N-(sr/32)); // P controller for Yaw
+	 L = P2 * (P1 * (L - phi/32) - sp/32); // Cascaded P controller for Roll 
+	 //M = P2 * (P1 * (M - theta/32) - sq/32);//Cascaded P controller for Pitch
+	M = 8 * (1*(M - theta/32) - sq/32);//Cascaded P controller for Pitch
 
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = Z + M/4 - N/4;
-		ae[1] = Z -L_new/4 + N/4;
-		ae[2] = Z - M/4 - N/4;
-		ae[3] = Z + L_new/4 + N/4;
+		ae[0] = Z + M/4 - N/8;
+		ae[1] = Z -L/4 + N/8;
+		ae[2] = Z - M/4 - N/8;
+		ae[3] = Z + L/4 + N/8;
 		speed_limit_check();
 	}else {
 		ae[0] = 0;

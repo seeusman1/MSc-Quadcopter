@@ -383,6 +383,8 @@ ModeMessage rs232_createMsg_mode(char c){
 		case 'd':
 		case 'r':
 		case 'f':
+		case 'u':
+		case 'j':
 		case '0':
 		case '1':
 		case '2':
