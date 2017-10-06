@@ -80,13 +80,12 @@ void close_js() {
 int main(int argc, char **argv)
 {
 	
-	char	ck;
 
 	term_puts("\nTerminal program - Embedded Real-Time Systems\n");
 
 	term_initio();
 	rs232_open();
-
+	init_queue(&receive_queue);
 	/*Joystic initialize
 	*/
 
@@ -120,8 +119,7 @@ int main(int argc, char **argv)
 
 		
 
-		if ((ck = rs232_getchar_nb()) != -1)
-			term_putchar(ck);
+		incoming_msg_check();
 
 	}
 	if(pthread_join(k_thrd, NULL)) {

@@ -1,8 +1,8 @@
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
 
-//#define JOYSTICK_PRESENT
-
+#define JOYSTICK_PRESENT
+#define JS_DEV	"/dev/input/js1"
 #include "../../protocol.h"
 
 /*------------------------------------------------------------
