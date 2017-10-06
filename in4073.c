@@ -98,19 +98,24 @@ int main(void)
 	}	
 
 	//Sends the log to the PC after flight is done
+	printf("Uploading...");
 	if (send_logger_flag){
 		while(current != current_spi_address)
 		{	
 			if(check_timer_flag()){
 				nrf_gpio_pin_toggle(YELLOW);
+				nrf_gpio_pin_toggle(BLUE);
+				nrf_gpio_pin_toggle(RED);
+				nrf_gpio_pin_toggle(GREEN);
 				current = send_log_data(current);
 				clear_timer_flag();	
-			}	
+			}
+			//printf(".");	
 		}
-	printf("Uploading DONE!\n");
+	printf("\nDone!\n");
 	}
 
-	printf("\n\t Goodbye \n\n");
+	printf("\nGoodbye \n\n");
 	nrf_delay_ms(100);
 
 	NVIC_SystemReset();

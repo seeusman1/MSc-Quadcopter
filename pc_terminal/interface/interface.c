@@ -363,6 +363,7 @@ ModeMessage rs232_createMsg_mode(char c){
 		//ESC Button
 		case 27:
 		msg.mode = 27;
+		term = 1;
 		break;
 		case 'q':
 		case 'a':

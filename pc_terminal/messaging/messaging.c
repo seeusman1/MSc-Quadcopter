@@ -11,6 +11,7 @@
 #include "messaging.h"
 #include "../../protocol.h"
 #include "../../logging/logging.h"
+#include "../pc_terminal.h"
 
 /**********************Messaging QUEUE*************************/
 
@@ -45,8 +46,8 @@ char dequeue(queue *q){
 
 /*
 * Author D.Patoukas
-*
-*
+* Handles the messages of type LoggedData
+* 
 */
 
 //number of messages per LOG
@@ -54,7 +55,7 @@ uint8_t rmn = sizeof(LoggedData)/PAYLOAD_SIZE;
 
 void handle_log(LogMessage* m) {
 
-	uint8_t rcvd = LOGGER_SIZE/PAYLOAD_SIZE - rmn;
+	uint8_t rcvd = sizeof(LoggedData)/PAYLOAD_SIZE - rmn;
 
 	if (rmn == sizeof(LoggedData)/PAYLOAD_SIZE)
 	{
@@ -62,19 +63,29 @@ void handle_log(LogMessage* m) {
 	  ptr_data = (uint8_t*) &(loggdata->padding);
 	}
 
-
-	
 	memcpy (ptr_data+(rcvd*PAYLOAD_SIZE), &(m->data), PAYLOAD_SIZE);
 	rmn--;
+	
+	//Once all log messages are received print a log message
 	if (rmn == 0)
 	{
-		printf("[PC]Mode:%d\n", 
-		loggdata->mode);
+		fprintf(f,"[Log]Mode:%d  |sq:%6d, sq:%6d, sr:%6d|", 
+			loggdata->mode,loggdata->sp,loggdata->sq,loggdata->sr);
+		fprintf(f, "ae: %4d %4d %4d %4d | motor: %4d %4d %4d %4d |",
+			loggdata->ae[0],loggdata->ae[1],loggdata->ae[2],loggdata->ae[3],
+			loggdata->motor[0],loggdata->motor[1],loggdata->motor[2],loggdata->motor[3]);
+		fprintf(f,"Bat:  %4d ,Temp: %4d ,Press: %6d |\n",
+			loggdata->bat_volt,loggdata->temperature,loggdata->pressure);
+		
 		rmn = sizeof(LoggedData)/PAYLOAD_SIZE;;
 	}
 }
 
-
+/*
+* Author D.Patoukas
+* Handles the messages of all types pc-side
+* 
+*/
 void handle_message()
 {
 
@@ -101,19 +112,20 @@ void handle_message()
 		}
 	}
 }
+
 /*
 * Author D.Patoukas
-*
+* Message checking pc side
 *
 */
-void incoming_msg_check(){ 
+int incoming_msg_check(){ 
 	int 		result;
 	unsigned char 	c;
 
 	result = read(fd_RS232, &c, 1);
 
 	if (result == 0)
-		return;
+		return 0;
 
 	else
 	{
@@ -126,5 +138,6 @@ void incoming_msg_check(){
 	{
 		handle_message();
 	}
+	return 1;
 
 }

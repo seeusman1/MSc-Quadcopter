@@ -23,12 +23,11 @@ char dequeue(queue *q);
 
 int fd_RS232;
 
-uint8_t *loggeddata;
 LoggedData* loggdata;
 uint8_t* ptr_data;
 
 
 void handle_message();
-void incoming_msg_check();
+int incoming_msg_check();
 
 #endif //__MESSAGING_H

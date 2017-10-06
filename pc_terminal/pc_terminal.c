@@ -24,18 +24,27 @@ int main(int argc, char **argv)
 {
 	
 	//char	ck;
-
 	term_puts("\nTerminal program - Embedded Real-Time Systems\n");
 
 	term_initio();
 	rs232_open();
+	serial_device = 0;
 	init_queue(&receive_queue);
+	
 	/*Joystic initialize
 	*/
+	pthread_t j_thrd,k_thrd;
 
+	/*open a file for the log
+	*/ 
+	f = fopen("file.txt", "w");
+	
+	if (f == NULL){
+    	printf("Error opening file!\n");
+    	return 1;
+	}
 
-	 pthread_t j_thrd,k_thrd;
-
+	term = 0;
 	term_puts("Type ^C to exit\n");
 
 	/* discard any incoming text
@@ -66,15 +75,17 @@ int main(int argc, char **argv)
 	 */
 	while(!term)	
 	{	
-
-		
-
-		// if ((ck = rs232_getchar_nb()) != -1)
-		// 	term_putchar(ck);
-
 		incoming_msg_check();
-
 	}
+
+	/*wait for the log to download.
+	*/
+	printf("Downloading..\n");
+	while(incoming_msg_check());
+	printf("Done!\n");
+	
+	/*join threads
+	*/
 	if(pthread_join(k_thrd, NULL)) {
 
 		fprintf(stderr, "Error joining thread\n");
@@ -89,6 +100,7 @@ int main(int argc, char **argv)
 
 	}
 	#endif
+	fclose(f);
 	term_exitio();
 	rs232_close();
 	term_puts("\n<exit>\n");
