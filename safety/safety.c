@@ -7,6 +7,10 @@
  * Checks safety conditions and switches to emergency mode if one of them is violated.
  */ 
 void check_safety() {
+	if(get_current_state() == PANIC) {
+		//Don't re-check safety when we're already in panic mode.
+		return;
+	}
 	bool safe = true;
 	safe &= check_battery();
 	if (!safe) {
@@ -21,6 +25,7 @@ void check_safety() {
  */
 bool check_battery() {
 	if(get_current_state() > SAFE && bat_volt < BAT_THRESHOLD) {
+		printf("[SAFETY] Battery voltage too low.\n");
 		return false;
 	}
 	return true;

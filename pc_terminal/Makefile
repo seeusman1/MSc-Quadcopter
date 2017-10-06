@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS = -g -Wall -lm
+CFLAGS = -g -Wall -lm 
 EXEC = ./pc-terminal
 
 all:
