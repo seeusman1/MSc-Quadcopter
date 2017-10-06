@@ -75,7 +75,7 @@ int main(void)
 		{
 			get_dmp_data();
 			calibrate_imu();
-			
+			check_safety();
 			run_filters_and_control();
 		}
 	}	
