@@ -38,7 +38,14 @@ int main(void)
 	init_statemanager();
 	uint32_t counter = 0;
 	demo_done = false;
-	current_pose.lift = 0;
+
+
+	nrf_wdt_reload_request_enable(NRF_WDT_RR0);
+	nrf_wdt_reload_value_set(32768);
+	nrf_wdt_task_trigger(NRF_WDT_TASK_START);
+
+
+	current_pose.lift = -32768;
 	current_pose.yaw = 0;
 	current_pose.roll = 0;
 	current_pose.pitch = 0;
