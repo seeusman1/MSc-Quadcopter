@@ -352,12 +352,12 @@ void joy_handler(union sigval val) {
 		msg.mode = (char) 4;
 		send_message((char*) &msg);
 	} 
-	if (JS_FLAGS & JS_EVENT_AXIS) { 	
-		currentPose = calculate_pose(axis,button);
-		current_JM = rs232_createMsg_joystick(axis,currentPose);
-		send_message((char*) &current_JM);
-	}
 	
+	//always send axes position so we can use this as heartbeat message.
+	currentPose = calculate_pose(axis,button);
+	current_JM = rs232_createMsg_joystick(axis,currentPose);
+	send_message((char*) &current_JM);
+
 }
 /*
  * Author: D.Patoukas
