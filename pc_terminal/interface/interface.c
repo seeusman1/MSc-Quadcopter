@@ -19,6 +19,7 @@
 #include "../../protocol.h"
 #include "../../crc/crc.h"
 
+#include "interface.h"
 
 //#define JOYSTICK_PRESENT
 
@@ -124,7 +125,7 @@ int 	rs232_putchar(char c)
 
 
 
-#define JS_DEV	"/dev/input/js0"
+
 
 //Joystic Globals
 int axis[6];
