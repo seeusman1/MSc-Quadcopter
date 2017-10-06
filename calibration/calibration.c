@@ -3,6 +3,7 @@
 //calibration offsets for the corresponding sensor values.
 int16_t sp_offset, sq_offset, sr_offset;
 int16_t sax_offset, say_offset, saz_offset;
+int16_t phi_offset, theta_offset, psi_offset;
 
 //is true iff the IMU has been calibrated since boot
 bool calibrated = false;
@@ -46,6 +47,11 @@ void calibrate_imu() {
 		sax_offset = -sax;
 		say_offset = -say;
 		saz_offset = -saz;
+
+		phi_offset = -phi;
+		theta_offset = -theta;
+		psi_offset = -psi;
+
 		calibrated = true;
 	} else {
 		sp = calibrate_value(sp, sp_offset);
@@ -56,7 +62,9 @@ void calibrate_imu() {
 		say = calibrate_value(say, say_offset);
 		saz = calibrate_value(saz, saz_offset);
 
-		
+		phi = calibrate_value(phi, phi_offset);
+		theta = calibrate_value(theta, theta_offset);
+		psi = calibrate_value(psi, psi_offset);
 	}
 }
 

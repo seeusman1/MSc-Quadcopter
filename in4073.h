@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "nrf_gpio.h"
 #include "nrf_delay.h"
+#include "nrf_wdt.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #include "ml.h"
