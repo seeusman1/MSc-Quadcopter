@@ -18,19 +18,30 @@ void prepare_to_Log(	LoggedData *data,
 						uint8_t mode,
 						int16_t *ae, 
 						uint16_t phi, uint16_t theta, uint16_t psi, 
-						uint16_t sp, uint16_t sq, uint16_t sr)
+						uint16_t sp, uint16_t sq, uint16_t sr,
+						int16_t *motor,
+						int32_t pressure,int32_t temperature,
+						uint16_t bat_volt)
 {
 	//Store the data
-	data->timestamp = get_time_us();
+	data->padding = 0;
 	data->mode = mode;
-	memcpy(data->ae,ae,AELEN*sizeof(uint16_t));
-	data->phi = phi;
-	data->theta = theta;
-	data->psi = psi;
 	data->sp = sp;
 	data->sq = sq;
 	data->sr = sr;
-}
+
+	memcpy(data->ae,ae,AELEN*sizeof(uint16_t));
+	
+	memcpy(data->motor,motor,AELEN*sizeof(uint16_t));
+	
+	data->pressure = pressure;
+	data->temperature = temperature;
+
+	data->phi = phi;
+	data->theta = theta;
+	data->psi = psi;
+	data->bat_volt = bat_volt;
+	}
 /*
 *D.Patoukas 
 *Logs the data into the SPI flash memory.
@@ -42,7 +53,7 @@ void prepare_to_Log(	LoggedData *data,
 
 uint32_t log_data(uint32_t address, LoggedData *data)
 {	
-	if(flash_write_bytes( address, (uint8_t *) &(data->timestamp), sizeof(LoggedData))){
+	if(flash_write_bytes( address, (uint8_t *) &(data->padding), sizeof(LoggedData))){
 		address += sizeof(LoggedData);
 		return address;
 	}
@@ -59,23 +70,30 @@ uint32_t log_data(uint32_t address, LoggedData *data)
 */
 uint32_t send_log_data(uint32_t address)//, LoggedData *data)
 {
-	int i;
+	int i,j;
 	LogMessage msg;
 	LoggedData data;
 	msg.id = LOG;
 	//Read data from SPI-FLASH
 	if (flash_read_bytes(address,(uint8_t*) &data, sizeof(LoggedData)))
 	{	
-		msg.data = data;
-		char* ptr =(char*) &msg;
-		//Send the data
-		for (i = 0; i < sizeof(LogMessage); ++i)
-		{	
-			nrf_gpio_pin_toggle(GREEN);
-			uart_put(*ptr++);
+		char* ptr_data = (char*) &data;
+
+		for (j = 0; j < sizeof(LoggedData)/PAYLOAD_SIZE; j++)
+		{
+			//msg.data = data;
+			//char* ptr =(char*) &msg;
+			uart_put(msg.id);
+			//Send the data
+			for (i = 0; i < PAYLOAD_SIZE; i++)
+			{	
+				nrf_gpio_pin_toggle(GREEN);
+				uart_put(*ptr_data++);
+			}
 		}
 		address += sizeof(LoggedData);
 		return address;
+	
 	}else{
 		nrf_gpio_pin_toggle(RED);
 		return address;

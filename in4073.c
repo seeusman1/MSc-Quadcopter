@@ -20,6 +20,7 @@
 #include "communication/communication.h"
 #include "calibration/calibration.h"
 #include "safety/safety.h"
+#include "logging/logging.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -47,6 +48,11 @@ int main(void)
 	pose_offsets.yaw = 0;
 	pose_offsets.roll = 0;
 	pose_offsets.pitch = 0;
+
+	uint32_t current_spi_address = LSA;
+	uint32_t current = LSA;
+	LoggedData data;
+
 	while (!demo_done)
 	{
 		handle_communication();
@@ -68,6 +74,18 @@ int main(void)
 			printf("| %u \n", get_current_state());
 			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
 			clear_timer_flag();
+
+			/*Logging*/
+			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
+				
+			if((current_spi_address = log_data(current_spi_address,&data)) == 0){
+				printf("Fail to log_data\n");
+				nrf_gpio_pin_toggle(RED);
+			}else{
+				send_logger_flag = 1;
+				nrf_gpio_pin_toggle(YELLOW);
+			}
+			
 		}
 
 		if (check_sensor_int_flag()) 
@@ -78,6 +96,19 @@ int main(void)
 			run_filters_and_control();
 		}
 	}	
+
+	//Sends the log to the PC after flight is done
+	if (send_logger_flag){
+		while(current != current_spi_address)
+		{	
+			if(check_timer_flag()){
+				nrf_gpio_pin_toggle(YELLOW);
+				current = send_log_data(current);
+				clear_timer_flag();	
+			}	
+		}
+	printf("Uploading DONE!\n");
+	}
 
 	printf("\n\t Goodbye \n\n");
 	nrf_delay_ms(100);

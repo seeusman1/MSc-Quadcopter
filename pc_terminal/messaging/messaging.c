@@ -10,6 +10,7 @@
 
 #include "messaging.h"
 #include "../../protocol.h"
+#include "../../logging/logging.h"
 
 /**********************Messaging QUEUE*************************/
 
@@ -48,10 +49,40 @@ char dequeue(queue *q){
 *
 */
 
+//number of messages per LOG
+uint8_t rmn = sizeof(LoggedData)/PAYLOAD_SIZE;
+
+void handle_log(LogMessage* m) {
+
+	uint8_t rcvd = LOGGER_SIZE/PAYLOAD_SIZE - rmn;
+
+	if (rmn == sizeof(LoggedData)/PAYLOAD_SIZE)
+	{
+	  loggdata = (LoggedData*) malloc(sizeof(LoggedData));
+	  ptr_data = (uint8_t*) &(loggdata->padding);
+	}
+
+
+	
+	memcpy (ptr_data+(rcvd*PAYLOAD_SIZE), &(m->data), PAYLOAD_SIZE);
+	rmn--;
+	if (rmn == 0)
+	{
+		printf("[PC]Mode:%d\n", 
+		loggdata->mode);
+		rmn = sizeof(LoggedData)/PAYLOAD_SIZE;;
+	}
+}
+
+
 void handle_message()
 {
-uint8_t msg[MESSAGE_SIZE];
-	PrintMessage *msp = (PrintMessage*) &msg[0];
+
+	uint8_t msg[MESSAGE_SIZE];
+	PrintMessage* msp = (PrintMessage*) &msg[0];
+	LogMessage* m =(LogMessage*) &msg[0];
+	
+	
 	if (receive_queue.count >= MESSAGE_SIZE){
 
 		for(uint8_t i=0; i < MESSAGE_SIZE; i++){
@@ -62,6 +93,10 @@ uint8_t msg[MESSAGE_SIZE];
 		{
 			case PRINT:
 				printf("%s",msp->data);
+				break;
+			case LOG:
+				handle_log(m);
+				
 				break;
 		}
 	}

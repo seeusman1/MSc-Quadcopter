@@ -68,6 +68,7 @@ $(abspath ../components/softdevice/common/softdevice_handler/softdevice_handler.
 $(abspath ./communication/communication.c) \
 $(abspath ./calibration/calibration.c) \
 $(abspath ./statemanager/statemanager.c) \
+$(abspath ./logging/logging.c) \
 $(abspath ./safety/safety.c) \
 
 #assembly files common to all targets

@@ -32,6 +32,11 @@
 
 bool demo_done;
 
+//Logging
+#define LSA 0x000000 //Data Logger Start Adress 
+int logger_flag;
+int send_logger_flag; 
+
 
 //Keyboard Arrow Offsets
 #define JS_CALIBRATION_STEP 50
