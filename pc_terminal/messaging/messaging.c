@@ -69,12 +69,14 @@ void handle_log(LogMessage* m) {
 	//Once all log messages are received print a log message
 	if (rmn == 0)
 	{
-		fprintf(f,"[Log]Mode:%d  |sq:%6d, sq:%6d, sr:%6d|", 
+		fprintf(f,"%d\t %6d\t%6d\t%6d\t", -
 			loggdata->mode,loggdata->sp,loggdata->sq,loggdata->sr);
-		fprintf(f, "ae: %4d %4d %4d %4d | motor: %4d %4d %4d %4d |",
+		fprintf(f, "%6d %6d %6d", 
+			loggdata->phi,loggdata->theta,loggdata->psi);
+		fprintf(f, "%4d\t%4d\t%4d\t %4d\t %4d\t %4d\t %4d\t \t\t%4d ",
 			loggdata->ae[0],loggdata->ae[1],loggdata->ae[2],loggdata->ae[3],
 			loggdata->motor[0],loggdata->motor[1],loggdata->motor[2],loggdata->motor[3]);
-		fprintf(f,"Bat:  %4d ,Temp: %4d ,Press: %6d |\n",
+		fprintf(f, "\t%4d\t %4d\t %6d \n",
 			loggdata->bat_volt,loggdata->temperature,loggdata->pressure);
 		
 		rmn = sizeof(LoggedData)/PAYLOAD_SIZE;;

@@ -73,8 +73,6 @@ int main(void)
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
 			printf("| %u \n", get_current_state());
 			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
-			clear_timer_flag();
-
 			/*Logging*/
 			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
 				
@@ -85,7 +83,8 @@ int main(void)
 				send_logger_flag = 1;
 				nrf_gpio_pin_toggle(YELLOW);
 			}
-			
+
+			clear_timer_flag();	
 		}
 
 		if (check_sensor_int_flag()) 
@@ -95,25 +94,28 @@ int main(void)
 			
 			run_filters_and_control();
 		}
+
+		
 	}	
 
 	//Sends the log to the PC after flight is done
 	printf("Uploading...");
 	if (send_logger_flag){
 		while(current != current_spi_address)
-		{	
-			if(check_timer_flag()){
+		{		if (check_timer_flag()) 
+				{
 				nrf_gpio_pin_toggle(YELLOW);
 				nrf_gpio_pin_toggle(BLUE);
 				nrf_gpio_pin_toggle(RED);
 				nrf_gpio_pin_toggle(GREEN);
-				current = send_log_data(current);
+				current = send_log_data(current);	
 				clear_timer_flag();	
-			}
-			//printf(".");	
+
+				}
 		}
-	printf("\nDone!\n");
+			//printf(".");	
 	}
+	printf("\nDone!\n");
 
 	printf("\nGoodbye \n\n");
 	nrf_delay_ms(100);
