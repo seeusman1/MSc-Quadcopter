@@ -117,6 +117,9 @@ void handle_message(GenericMessage *message)
 			JoystickMessage *joymsg = (JoystickMessage*) message;
 			current_pose = joymsg->pose;
 			calibrate_js();
+
+			//this is also used as a heartbeat, so reset the watchdog timer.
+			nrf_wdt_reload_request_set(NRF_WDT_RR0);
 			break;
 		}
 		case MODE:

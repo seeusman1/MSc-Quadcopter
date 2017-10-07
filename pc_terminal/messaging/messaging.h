@@ -2,7 +2,7 @@
 #ifndef __MESSAGING_H
 #define __MESSAGING_H
 
-//#define JOYSTICK_PRESENT
+
 #include "../../logging/logging.h"
 
 

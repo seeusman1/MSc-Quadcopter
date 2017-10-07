@@ -16,6 +16,9 @@ bool check_conditions(state_t to) {
 	if(to == YAWCONTROL && !is_calibrated()) {
 		return false;
 	}
+	if(to == FULLCONTROL && !is_calibrated()) {
+		return false;
+	}
 	//Add states with specific pre-conditions here
 	return true;
 }
@@ -49,6 +52,9 @@ void init_statemanager() {
 	allowed_transitions[SAFE][YAWCONTROL] = true;
 	allowed_transitions[YAWCONTROL][SAFE] = true;
 	allowed_transitions[YAWCONTROL][PANIC] = true;
+	allowed_transitions[SAFE][FULLCONTROL] = true;
+	allowed_transitions[FULLCONTROL][SAFE] = true;
+	allowed_transitions[FULLCONTROL][PANIC] = true;
 }
 
 

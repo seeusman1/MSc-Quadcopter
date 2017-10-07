@@ -114,7 +114,6 @@ void handle_message()
 		}
 	}
 }
-
 /*
 * Author D.Patoukas
 * Message checking pc side

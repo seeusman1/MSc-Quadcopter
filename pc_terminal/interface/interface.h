@@ -1,7 +1,7 @@
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
 
-//#define JOYSTICK_PRESENT
+#define JOYSTICK_PRESENT
 
 #include "../../protocol.h"
 
@@ -51,7 +51,7 @@ JoystickMessage rs232_createMsg_joystick (int axis[], JoystickPose pose);
 
 JoystickPose calculate_pose(int axis[], int button[]);
 
-void *joy_thread();
+void joy_handler(union sigval val);
 
 void *key_thread();
 

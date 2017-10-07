@@ -39,7 +39,14 @@ int main(void)
 	init_statemanager();
 	uint32_t counter = 0;
 	demo_done = false;
-	current_pose.lift = 0;
+
+
+	//nrf_wdt_reload_request_enable(NRF_WDT_RR0);
+	//nrf_wdt_reload_value_set(32768);
+	//nrf_wdt_task_trigger(NRF_WDT_TASK_START);
+
+
+	current_pose.lift = -32768;
 	current_pose.yaw = 0;
 	current_pose.roll = 0;
 	current_pose.pitch = 0;
@@ -71,6 +78,7 @@ int main(void)
 			printf("%6d %6d %6d | ", phi, theta, psi);
 			printf("%6d %6d %6d | ", sp, sq, sr);
 			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
+			printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
 			printf("| %u \n", get_current_state());
 			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
 			/*Logging*/
@@ -91,11 +99,9 @@ int main(void)
 		{
 			get_dmp_data();
 			calibrate_imu();
-			
+			check_safety();
 			run_filters_and_control();
 		}
-
-		
 	}	
 
 	//Sends the log to the PC after flight is done
