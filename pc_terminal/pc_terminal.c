@@ -126,7 +126,11 @@ int main(int argc, char **argv)
 	 */
 	while(!term)	
 	{	
+
+		
+
 		incoming_msg_check();
+
 	}
 
 	/*wait for the log to download.
