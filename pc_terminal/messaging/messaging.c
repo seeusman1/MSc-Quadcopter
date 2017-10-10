@@ -92,9 +92,15 @@ void handle_message()
 {
 
 	uint8_t msg[MESSAGE_SIZE];
-	PrintMessage* msp = (PrintMessage*) &msg[0];
-	LogMessage* m =(LogMessage*) &msg[0];
-	
+	//GenericMessage* g_msg = (GenericMessage*) &msg[0];
+	LogMessage* l_msg =(LogMessage*) &msg[0];
+	PrintMessage* p_msg = (PrintMessage*) &msg[0];
+	//JoystickMessage* j_msg = (JoystickMessage*) &msg[0];
+	MotorMessage* m_msg = (MotorMessage*) &msg[0];			
+	AngleMessage* a_msg = (AngleMessage*) &msg[0];
+	RateMessage* r_msg = (RateMessage*) &msg[0];
+	StatMessage* s_msg = (StatMessage*) &msg[0];
+
 	
 	if (receive_queue.count >= MESSAGE_SIZE){
 
@@ -105,11 +111,22 @@ void handle_message()
 		switch (msg[0])
 		{
 			case PRINT:
-				printf("%s",msp->data);
+				printf("%s",p_msg->data);
 				break;
 			case LOG:
-				handle_log(m);
-				
+				handle_log(l_msg);
+				break;
+			case MOTOR:
+				printf("Motor:%d %d %d %d\n",m_msg->motor[0],m_msg->motor[1],m_msg->motor[2],m_msg->motor[3]);
+				break;
+			case ANGLE:
+				printf("Angle:phi %d,theta %d,psi %d\n",a_msg->phi,a_msg->theta,a_msg->psi);
+				break;
+			case RATE:
+				printf("Rate:sq %d,sq %d,sr %d\n",r_msg->sp,r_msg->sq,r_msg->sr);
+				break;
+			case STAT:
+				printf("Stat:mode %d,temp %d,batt %d\n",s_msg->mode,s_msg->temperature,s_msg->bat_volt);
 				break;
 		}
 	}

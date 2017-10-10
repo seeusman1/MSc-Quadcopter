@@ -21,6 +21,7 @@
 #include "calibration/calibration.h"
 #include "safety/safety.h"
 #include "logging/logging.h"
+#include "telemetry/telemetry.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -73,14 +74,14 @@ int main(void)
 			adc_request_sample();
 			read_baro();
 
-			printf("%10ld | ", get_time_us());
-			printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
-			printf("%6d %6d %6d | ", phi, theta, psi);
-			printf("%6d %6d %6d | ", sp, sq, sr);
-			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
-			printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
-			printf("| %u \n", get_current_state());
-			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
+			// printf("%10ld | ", get_time_us());
+			// printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
+			// printf("%6d %6d %6d | ", phi, theta, psi);
+			// printf("%6d %6d %6d | ", sp, sq, sr);
+			// printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
+			// printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
+			// printf("| %u \n", get_current_state());
+			// // printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
 			/*Logging*/
 			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
 				
@@ -92,6 +93,8 @@ int main(void)
 				nrf_gpio_pin_toggle(YELLOW);
 			}
 
+			send_telemetry();
+			
 			clear_timer_flag();	
 		}
 
