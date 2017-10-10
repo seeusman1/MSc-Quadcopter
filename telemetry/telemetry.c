@@ -16,7 +16,7 @@ void send_telemetry(){
 	{
 		uart_put(m_msg.motor[i]);
 	}
-
+	//TODO: fix thesr stuff to send byte by byte.
 	AngleMessage a_msg;
 	a_msg.id = ANGLE;
 	uart_put(a_msg.id);
@@ -44,7 +44,7 @@ void send_telemetry(){
 	uart_put(s_msg.temperature);
 	s_msg.bat_volt = bat_volt;
 	uart_put(s_msg.bat_volt);
-	s_msg.mode = get_current_state();
+	s_msg.mode =(uint8_t) get_current_state();
 	uart_put(s_msg.mode);
 
 }

@@ -88,18 +88,21 @@ void handle_log(LogMessage* m) {
 * Handles the messages of all types pc-side
 * 
 */
+int s_flag = 0;
+int m_flag = 0;
+int a_flag = 0;
+int r_flag = 0;
+
 void handle_message()
 {
 
 	uint8_t msg[MESSAGE_SIZE];
-	//GenericMessage* g_msg = (GenericMessage*) &msg[0];
-	LogMessage* l_msg =(LogMessage*) &msg[0];
+	LogMessage*   l_msg = (LogMessage*)   &msg[0];
 	PrintMessage* p_msg = (PrintMessage*) &msg[0];
-	//JoystickMessage* j_msg = (JoystickMessage*) &msg[0];
 	MotorMessage* m_msg = (MotorMessage*) &msg[0];			
 	AngleMessage* a_msg = (AngleMessage*) &msg[0];
-	RateMessage* r_msg = (RateMessage*) &msg[0];
-	StatMessage* s_msg = (StatMessage*) &msg[0];
+	RateMessage*  r_msg = (RateMessage*)  &msg[0];
+	StatMessage*  s_msg = (StatMessage*)  &msg[0];
 
 	
 	if (receive_queue.count >= MESSAGE_SIZE){
@@ -117,18 +120,45 @@ void handle_message()
 				handle_log(l_msg);
 				break;
 			case MOTOR:
-				printf("Motor:%d %d %d %d\n",m_msg->motor[0],m_msg->motor[1],m_msg->motor[2],m_msg->motor[3]);
+				//printf("M:%3d %3d %3d %3d",m_msg->motor[0],m_msg->motor[1],m_msg->motor[2],m_msg->motor[3]);
+				m_flag = 1;
+				pr_motor[0] = m_msg->motor[0];
+				pr_motor[1] = m_msg->motor[1];
+				pr_motor[2] = m_msg->motor[2];
+				pr_motor[3] = m_msg->motor[3];
 				break;
 			case ANGLE:
-				printf("Angle:phi %d,theta %d,psi %d\n",a_msg->phi,a_msg->theta,a_msg->psi);
+				//printf("|phi %6d,theta %6d,psi %6d|",a_msg->phi,a_msg->theta,a_msg->psi);
+				a_flag = 1;
+				pr_psi = a_msg->psi;
+				pr_theta = a_msg->theta;
+				pr_phi = a_msg->phi;
 				break;
 			case RATE:
-				printf("Rate:sq %d,sq %d,sr %d\n",r_msg->sp,r_msg->sq,r_msg->sr);
+				//printf("|sq %6d,sq %6d,sr %6d|",r_msg->sp,r_msg->sq,r_msg->sr);
+				r_flag = 1;
+				pr_sp = r_msg->sp;
+				pr_sq = r_msg->sq;
+				pr_sr = r_msg->sr;
 				break;
 			case STAT:
-				printf("Stat:mode %d,temp %d,batt %d\n",s_msg->mode,s_msg->temperature,s_msg->bat_volt);
+				//printf("|mode %1d|temp %4d|batt %4d\n",s_msg->mode,s_msg->temperature,s_msg->bat_volt);
+				s_flag = 1;
+				pr_temp = s_msg->temperature;
+				pr_batt = s_msg->bat_volt;
+				pr_mode = s_msg->mode;
 				break;
 		}
+		if (r_flag && m_flag && s_flag && a_flag)
+		{
+			 printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
+			 printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);
+			 printf("%6d %6d %6d | ", pr_sp, pr_sq, pr_sr);
+			 printf("%4d | %4d | %1d\n", pr_batt, pr_temp, pr_mode);
+			
+		}
+         	
+
 	}
 }
 /*

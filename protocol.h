@@ -47,18 +47,20 @@ typedef struct {
 } __attribute__((packed)) JoystickMessage;
 _Static_assert(sizeof(JoystickMessage) == MESSAGE_SIZE, "JoystickMessage size is incorrect.");
 
-
+/*
+* Author D.Patoukas
+*/
 typedef struct {
 	MessageId id : 8;
 	char mode;
 	char padding[7];
-} ModeMessage;
+} __attribute__((packed)) ModeMessage;
 _Static_assert(sizeof(ModeMessage) == MESSAGE_SIZE, "ModeMessage size is incorrect.");
 
 typedef struct {
 	MessageId id : 8;
 	char data[PAYLOAD_SIZE];
-} PrintMessage;
+} __attribute__((packed)) PrintMessage;
 _Static_assert(sizeof(PrintMessage) == MESSAGE_SIZE, "PrintMessage size is incorrect.");
 
 typedef struct {
