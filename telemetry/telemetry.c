@@ -1,9 +1,14 @@
+/*
+* Author D.Patoukas
+* 
+* 
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include "../protocol.h"
 #include "../statemanager/statemanager.h"
 #include "../in4073.h"
-
 
 void send_motors(){
 
