@@ -85,13 +85,23 @@ int main(int argc, char **argv)
 
 	term_initio();
 	rs232_open();
+	serial_device = 0;
 	init_queue(&receive_queue);
 	/*Joystic initialize
 	*/
 
+	/*open a file for the log
+	*/ 
+	f = fopen("file.txt", "w");
+	
+	if (f == NULL){
+    	printf("Error opening file!\n");
+    	return 1;
+	}
 
 	 pthread_t k_thrd;
 
+	term = 0;
 	term_puts("Type ^C to exit\n");
 
 	/* discard any incoming text
@@ -122,6 +132,20 @@ int main(int argc, char **argv)
 		incoming_msg_check();
 
 	}
+
+	/*wait for the log to download.
+	*/
+	printf("Downloading..\n");
+	fprintf(f,"Mode |sq\t \tsq\t \tsr\t|");
+	// fprintf(f, "\tphi theta\t psi|");
+	fprintf(f, "%-6s%-8s%-6s", "phi", "theta", "psi");
+	fprintf(f, "ae[0]\tae[1]\tae[2]\tae[3]|motor[0]\tmotor[1]\tmotor[2]\tmotor[3]|");
+	fprintf(f,"Bat\t ,Temp:\t ,Press:\t|\n");
+	while(incoming_msg_check());
+	printf("Done!\n");
+	
+	/*join threads
+	*/
 	if(pthread_join(k_thrd, NULL)) {
 
 		fprintf(stderr, "Error joining thread\n");
@@ -133,6 +157,7 @@ int main(int argc, char **argv)
 	close_js();
 	#endif
 
+	fclose(f);
 	term_exitio();
 	rs232_close();
 	term_puts("\n<exit>\n");

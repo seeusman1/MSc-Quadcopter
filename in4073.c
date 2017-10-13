@@ -20,6 +20,8 @@
 #include "communication/communication.h"
 #include "calibration/calibration.h"
 #include "safety/safety.h"
+#include "logging/logging.h"
+#include "telemetry/telemetry.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -36,8 +38,9 @@ int main(void)
 	spi_flash_init();
 	ble_init();
 	init_statemanager();
-	uint32_t counter = 0;
+
 	demo_done = false;
+	uint32_t old_t = 0;
 
 
 	nrf_wdt_reload_request_enable(NRF_WDT_RR0);
@@ -54,6 +57,11 @@ int main(void)
 	pose_offsets.yaw = 0;
 	pose_offsets.roll = 0;
 	pose_offsets.pitch = 0;
+
+	uint32_t write_address = LSA;
+	uint32_t current = LSA;
+	LoggedData data;
+
 	while (!demo_done)
 	{
 		handle_communication();
@@ -62,19 +70,11 @@ int main(void)
 
 		if (check_timer_flag()) 
 		{
-			if (counter++%20 == 0) nrf_gpio_pin_toggle(BLUE);
 
 			adc_request_sample();
 			read_baro();
 
-			printf("%10ld | ", get_time_us());
-			printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
-			printf("%6d %6d %6d | ", phi, theta, psi);
-			printf("%6d %6d %6d | ", sp, sq, sr);
-			printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
-			printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
-			printf("| %u \n", get_current_state());
-			// printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);
+			
 			clear_timer_flag();
 		}
 
@@ -84,10 +84,51 @@ int main(void)
 			calibrate_imu();
 			check_safety();
 			run_filters_and_control();
+			send_telemetry();
 		}
+
+		
+
+		/*Logging*/
+		if ((get_time_us() - old_t) > LOG_FREQ)
+		{	
+			old_t = get_time_us();
+
+			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
+			if((write_address = log_data(write_address,&data)) == 0){
+				printf("Fail to log_data\n");
+				nrf_gpio_pin_toggle(RED);
+			}else{
+				send_logger_flag = 1;
+				nrf_gpio_pin_toggle(YELLOW);
+			}
+
+		}
+		
+			
 	}	
 
-	printf("\n\t Goodbye \n\n");
+	//Sends the log to the PC after flight is done
+	printf("Uploading...");
+	if (send_logger_flag)
+	{
+		while(current != write_address)
+		{
+			if ((get_time_us() - old_t) > SEND_FREQ) 
+			{
+				old_t = get_time_us();
+				nrf_gpio_pin_toggle(YELLOW);
+				nrf_gpio_pin_toggle(BLUE);
+				nrf_gpio_pin_toggle(RED);
+				nrf_gpio_pin_toggle(GREEN);
+				current = send_log_data(current);	
+			}
+		}
+			//printf(".");	
+	}
+	printf("\nDone!\n");
+
+	printf("\nGoodbye \n\n");
 	nrf_delay_ms(100);
 
 	NVIC_SystemReset();

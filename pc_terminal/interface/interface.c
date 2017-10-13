@@ -14,12 +14,10 @@
 #include <pthread.h>
 #include <errno.h>
 
-
+#include "interface.h"
 #include "../joystick.h"
 #include "../../protocol.h"
 #include "../../crc/crc.h"
-
-#include "interface.h"
 
 //#define JOYSTICK_PRESENT
 
@@ -374,6 +372,7 @@ ModeMessage rs232_createMsg_mode(char c){
 		//ESC Button
 		case 27:
 		msg.mode = 27;
+		term = 1;
 		break;
 		case 'q':
 		case 'a':
