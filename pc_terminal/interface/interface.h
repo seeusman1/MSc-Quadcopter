@@ -2,9 +2,9 @@
 #define __INTERFACE_H
 
 #define JOYSTICK_PRESENT
-#define JS_DEV	"/dev/input/js1"
-#include "../../protocol.h"
 
+#include "../../protocol.h"
+#define JS_DEV	"/dev/input/js0"
 /*------------------------------------------------------------
  * Serial
  *------------------------------------------------------------

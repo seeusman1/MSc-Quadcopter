@@ -2,7 +2,8 @@
 #ifndef __MESSAGING_H
 #define __MESSAGING_H
 
-//#define JOYSTICK_PRESENT
+
+#include "../../logging/logging.h"
 
 
 #define QUEUE_SIZE 256
@@ -22,7 +23,15 @@ char dequeue(queue *q);
 
 int fd_RS232;
 
+LoggedData* loggdata;
+uint8_t* ptr_data;
+
+int pr_motor[4];
+int pr_batt,pr_temp,pr_mode;
+int pr_psi,pr_theta,pr_phi;
+int pr_sp,pr_sq,pr_sr; 
+
 void handle_message();
-void incoming_msg_check();
+int incoming_msg_check();
 
 #endif //__MESSAGING_H

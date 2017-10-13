@@ -56,3 +56,5 @@ _build/
 
 # python compiled files
 *.pyc
+
+file.txt

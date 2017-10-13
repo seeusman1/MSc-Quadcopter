@@ -7,6 +7,7 @@
 #include "interface/interface.h"
 #include "messaging/messaging.h"
 #include "../protocol.h"
+#include <stdio.h>
 //#include "../crc/crc.h"
 
 queue receive_queue;
@@ -16,7 +17,10 @@ int button[12];
 int fd;
 
 //terminal termination
-int 	term = 0;
+int term;
+
+//open file
+FILE *f;
 
 //character variable
 char	c;
@@ -24,7 +28,7 @@ char	c;
 struct termios 	savetty;
 
 //serial
-int serial_device = 0;
+int serial_device;
 int fd_RS232;
 
 #endif //__PC_TERMINAL_H
