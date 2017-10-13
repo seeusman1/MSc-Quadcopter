@@ -2,7 +2,7 @@
 #define __INTERFACE_H
 
 #define JOYSTICK_PRESENT
-#define JS_DEV	"/dev/input/js1"
+#define JS_DEV	"/dev/input/js0"
 #include "../../protocol.h"
 
 /*------------------------------------------------------------

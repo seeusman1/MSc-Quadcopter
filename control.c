@@ -14,8 +14,8 @@
 #include "statemanager/statemanager.h"
 
 #define MAX_SETPOINT 900
-#define MIN_SETPOINT 168 // needs to check at what value rotor starts spinning
-uint32_t P = 4;
+#define MIN_SETPOINT 200 // needs to check at what value rotor starts spinning
+uint32_t P = 10;
 uint32_t P1 = 1;
 uint32_t P2 = 4; // P2 >= 4*P1
 
@@ -73,6 +73,41 @@ void update_motors(void)
 	}else if (ae[3] > MAX_SETPOINT){
 		ae[3] = MAX_SETPOINT;
 	}
+
+
+
+
+
+
+	if ((ae[0] == MIN_SETPOINT) && (ae[2] > 600)){
+		ae[2] = 600;
+	}
+
+	if ((ae[2] == MIN_SETPOINT) && (ae[0] > 600)){
+		ae[0] = 600;
+	}
+
+	if ((ae[1] == MIN_SETPOINT) && (ae[3] > 600)){
+		ae[3] = 600;
+	}
+
+	if ((ae[3] == MIN_SETPOINT) && (ae[1] > 600)){
+		ae[1] = 600;
+	}
+
+
+
+	if ((ae[0] == MIN_SETPOINT) && (ae[2] == MIN_SETPOINT)){
+		if (ae[1] > 600) ae[1]=600;
+		if (ae[3] > 600) ae[3]=600;
+	}
+
+	if ((ae[1] == MIN_SETPOINT) && (ae[3] == MIN_SETPOINT)){
+		if (ae[0] > 600) ae[0]=600;
+		if (ae[2] > 600) ae[2]=600;
+	}
+
+
 		
 }
 
@@ -123,10 +158,10 @@ void yaw_control() {
 
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = Z + M/4 - N_new/4;
-		ae[1] = Z -L/4 + N_new/4;
-		ae[2] = Z - M/4 - N_new/4;
-		ae[3] = Z + L/4 + N_new/4;
+		ae[0] = Z + M/4 + N_new/4;
+		ae[1] = Z -L/4 - N_new/4;
+		ae[2] = Z - M/4 + N_new/4;
+		ae[3] = Z + L/4 - N_new/4;
 		speed_limit_check();
 	}else {
 		ae[0] = 0;
@@ -158,16 +193,16 @@ void full_control() {
 	//uint8_t A2=1;
 	
 	N = P * (N-(sr/32)); // P controller for Yaw
-	 L = P2 * (P1 * (L - phi/32) - sp/32); // Cascaded P controller for Roll 
-	 //M = P2 * (P1 * (M - theta/32) - sq/32);//Cascaded P controller for Pitch
-	M = 8 * (1*(M - theta/32) - sq/32);//Cascaded P controller for Pitch
+	L = P2 * (P1 * (L - phi/32) - sp/32); // Cascaded P controller for Roll 
+	M = P2 * (P1 * (M - theta/32) + sq/32);//Cascaded P controller for Pitch
+	
 
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = Z + M/4 - N/8;
-		ae[1] = Z -L/4 + N/8;
-		ae[2] = Z - M/4 - N/8;
-		ae[3] = Z + L/4 + N/8;
+		ae[0] = Z + M/4 + N/8;
+		ae[1] = Z -L/4 - N/8;
+		ae[2] = Z - M/4 + N/8;
+		ae[3] = Z + L/4 - N/8;
 		speed_limit_check();
 	}else {
 		ae[0] = 0;

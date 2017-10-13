@@ -126,7 +126,6 @@ int 	rs232_putchar(char c)
 
 
 
-
 //Joystic Globals
 int axis[6];
 int button[12]; 
