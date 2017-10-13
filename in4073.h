@@ -33,6 +33,12 @@
 
 bool demo_done;
 
+#ifdef PROFILING 
+uint32_t cont_time;
+uint32_t tele_time;
+uint32_t new_t;
+#endif
+
 //Logging
 #define SEND_FREQ 20000
 #define LOG_FREQ 20000

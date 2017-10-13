@@ -78,6 +78,27 @@ void send_stats(){
 	}
 
 }
+
+#ifdef PROFILING
+void send_profiling(){
+	
+	uint8_t i;
+	ProfMessage p_msg;
+	p_msg.id = PROF;
+	p_msg.cont_time = cont_time;
+	p_msg.tele_time = tele_time;
+
+	char* ptr_data = (char*) &p_msg.cont_time;
+	
+	uart_put(p_msg.id);
+	for (i = 0; i < PAYLOAD_SIZE; i++)
+	{
+		uart_put(*ptr_data++);
+	}
+
+}
+#endif
+
 #define TELE_FREQ 100000
 //TODO: we can arrange each telemetry function to run on a different frequency
 void send_telemetry(){
@@ -91,6 +112,9 @@ void send_telemetry(){
 		send_angles();
 		send_rates();
 		send_stats();
+		#ifdef PROFILING
+		send_profiling();
+		#endif
 	
 	}
 	

@@ -30,6 +30,9 @@ int pr_motor[4];
 int pr_batt,pr_temp,pr_mode;
 int pr_psi,pr_theta,pr_phi;
 int pr_sp,pr_sq,pr_sr; 
+int pr_cont_time;
+int pr_tele_time;
+
 
 void handle_message();
 int incoming_msg_check();

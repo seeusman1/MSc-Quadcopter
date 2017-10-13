@@ -41,8 +41,7 @@ int main(void)
 
 	demo_done = false;
 	uint32_t old_t = 0;
-
-
+	
 	nrf_wdt_reload_request_enable(NRF_WDT_RR0);
 	nrf_wdt_reload_value_set(32768);
 	nrf_wdt_task_trigger(NRF_WDT_TASK_START);
@@ -66,27 +65,32 @@ int main(void)
 	{
 		handle_communication();
 
-		// process_key( dequeue(&rx_queue) );
-
 		if (check_timer_flag()) 
 		{
-
 			adc_request_sample();
 			read_baro();
-
-			
 			clear_timer_flag();
+
 		}
 
+
 		if (check_sensor_int_flag()) 
-		{
+		{	
 			get_dmp_data();
 			calibrate_imu();
 			check_safety();
+			#ifdef PROFILING
+			new_t = get_time_us();
+			run_filters_and_control();
+			cont_time = get_time_us() - new_t;
+			new_t = get_time_us();
+			send_telemetry();
+			tele_time = get_time_us() - new_t;
+			#else
 			run_filters_and_control();
 			send_telemetry();
+			#endif 
 		}
-
 		
 
 		/*Logging*/
@@ -102,9 +106,8 @@ int main(void)
 				send_logger_flag = 1;
 				nrf_gpio_pin_toggle(YELLOW);
 			}
-
+			
 		}
-		
 			
 	}	
 

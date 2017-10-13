@@ -92,6 +92,7 @@ int s_flag = 0;
 int m_flag = 0;
 int a_flag = 0;
 int r_flag = 0;
+int p_flag = 0;
 
 void handle_message()
 {
@@ -103,7 +104,7 @@ void handle_message()
 	AngleMessage* a_msg = (AngleMessage*) &msg[0];
 	RateMessage*  r_msg = (RateMessage*)  &msg[0];
 	StatMessage*  s_msg = (StatMessage*)  &msg[0];
-
+	ProfMessage*  pr_msg = (ProfMessage*)  &msg[0];
 	
 	if (receive_queue.count >= MESSAGE_SIZE){
 
@@ -148,13 +149,25 @@ void handle_message()
 				pr_batt = s_msg->bat_volt;
 				pr_mode = s_msg->mode;
 				break;
+			#ifdef PROFILING
+			case PROF:
+				p_flag = 1;
+				pr_cont_time = pr_msg->cont_time;
+				pr_tele_time = pr_msg->tele_time;
+				break;
+			#else
+				p_flag = 1;
+			#endif
 		}
-		if (r_flag && m_flag && s_flag && a_flag && !term)
+		if (r_flag && m_flag && s_flag && a_flag && !term && p_flag)
 		{
-			 printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
-			 printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);
-			 printf("%6d %6d %6d | ", pr_sp, pr_sq, pr_sr);
-			 printf("%4d | %4d | %1d\n", pr_batt, pr_temp, pr_mode);
+			#ifdef PROFILING
+			printf("Control:%4d,Tele:%4d|",pr_cont_time,pr_tele_time);
+			#endif
+			printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
+			printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);
+			printf("%6d %6d %6d | ", pr_sp, pr_sq, pr_sr);
+			printf("%4d | %4d | %1d\n", pr_batt, pr_temp, pr_mode);
 			
 		}
          	
