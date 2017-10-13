@@ -19,6 +19,10 @@ bool check_conditions(state_t to) {
 	if(to == FULLCONTROL && !is_calibrated()) {
 		return false;
 	}
+	if ((to == MANUAL || to == YAWCONTROL || to == FULLCONTROL) && current_pose.lift > -32000) {
+		printf("Lift>0\n");
+		return false;
+	}
 	//Add states with specific pre-conditions here
 	return true;
 }

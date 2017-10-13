@@ -14,11 +14,10 @@
 #include <pthread.h>
 #include <errno.h>
 
-
+#include "interface.h"
 #include "../joystick.h"
 #include "../../protocol.h"
 #include "../../crc/crc.h"
-
 
 //#define JOYSTICK_PRESENT
 
@@ -124,7 +123,7 @@ int 	rs232_putchar(char c)
 
 
 
-#define JS_DEV	"/dev/input/js1"
+
 
 //Joystic Globals
 int axis[6];
@@ -374,6 +373,7 @@ ModeMessage rs232_createMsg_mode(char c){
 		//ESC Button
 		case 27:
 		msg.mode = 27;
+		term = 1;
 		break;
 		case 'q':
 		case 'a':

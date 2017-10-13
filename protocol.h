@@ -11,7 +11,13 @@
  */
 typedef enum {
 	JOYSTICK,
-	MODE
+	MODE,
+	PRINT,
+	LOG,
+	MOTOR,
+	ANGLE,
+	RATE,
+	STAT
 } __attribute__ ((__packed__)) MessageId;
 _Static_assert(sizeof(MessageId) == 1, "MessageId size is incorrect.");
 
@@ -41,11 +47,59 @@ typedef struct {
 } __attribute__((packed)) JoystickMessage;
 _Static_assert(sizeof(JoystickMessage) == MESSAGE_SIZE, "JoystickMessage size is incorrect.");
 
-
+/*
+* Author D.Patoukas
+*/
 typedef struct {
 	MessageId id : 8;
 	char mode;
 	char padding[7];
-} ModeMessage;
+} __attribute__((packed)) ModeMessage;
 _Static_assert(sizeof(ModeMessage) == MESSAGE_SIZE, "ModeMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	char data[PAYLOAD_SIZE];
+} __attribute__((packed)) PrintMessage;
+_Static_assert(sizeof(PrintMessage) == MESSAGE_SIZE, "PrintMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	char data[PAYLOAD_SIZE];
+} __attribute__((packed)) LogMessage;
+_Static_assert(sizeof(LogMessage) == MESSAGE_SIZE, "LogMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	uint16_t motor[4];
+} __attribute__((packed)) MotorMessage;
+_Static_assert(sizeof(MotorMessage) == MESSAGE_SIZE, "MotorMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	uint16_t phi;		
+	uint16_t theta;		
+	uint16_t psi;
+	uint8_t padding[2];		
+} __attribute__((packed)) AngleMessage;
+_Static_assert(sizeof(AngleMessage) == MESSAGE_SIZE, "AngleMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	uint16_t sp;			
+	uint16_t sq;		
+	uint16_t sr;		
+	uint8_t padding[2];		
+} __attribute__((packed)) RateMessage;
+_Static_assert(sizeof(RateMessage) == MESSAGE_SIZE, "RateMessage size is incorrect.");
+
+typedef struct {
+	MessageId id : 8;
+	int32_t temperature;
+	uint16_t bat_volt; 
+	uint8_t mode;			
+	uint8_t padding[1];		
+} __attribute__((packed)) StatMessage;
+_Static_assert(sizeof(StatMessage) == MESSAGE_SIZE, "RateMessage size is incorrect.");
+
 #endif //__PROTOCOL_H

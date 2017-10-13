@@ -1,10 +1,10 @@
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
 
-//#define JOYSTICK_PRESENT
+#define JOYSTICK_PRESENT
 
 #include "../../protocol.h"
-
+#define JS_DEV	"/dev/input/js0"
 /*------------------------------------------------------------
  * Serial
  *------------------------------------------------------------
