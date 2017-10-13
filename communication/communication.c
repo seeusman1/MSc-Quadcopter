@@ -55,11 +55,11 @@ void process_key(uint8_t c)
 		case 28:
 			//UP
 			printf("Increment\n");
-			pose_offsets.pitch += JS_CALIBRATION_STEP;
+			pose_offsets.pitch -= JS_CALIBRATION_STEP;
 			break;
 		case 29:
 			//DOWN
-			pose_offsets.pitch -= JS_CALIBRATION_STEP;
+			pose_offsets.pitch += JS_CALIBRATION_STEP;
 			break;
 		case 30:
 			//RIGHT
