@@ -17,7 +17,7 @@ int button[12];
 int fd;
 
 //terminal termination
-int 	term;
+int term;
 
 //open file
 FILE *f;

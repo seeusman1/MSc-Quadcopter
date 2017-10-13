@@ -64,7 +64,7 @@ void handle_log(LogMessage* m) {
 	}
 
 	memcpy (ptr_data+(rcvd*PAYLOAD_SIZE), &(m->data), PAYLOAD_SIZE);
-	rmn--;
+	--rmn;
 	
 	//Once all log messages are received print a log message
 	if (rmn == 0)

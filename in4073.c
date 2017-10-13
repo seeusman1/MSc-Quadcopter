@@ -38,13 +38,14 @@ int main(void)
 	spi_flash_init();
 	ble_init();
 	init_statemanager();
-	//uint32_t counter = 0;
+
 	demo_done = false;
 	uint32_t old_t = 0;
 
-	//nrf_wdt_reload_request_enable(NRF_WDT_RR0);
-	//nrf_wdt_reload_value_set(32768);
-	//nrf_wdt_task_trigger(NRF_WDT_TASK_START);
+
+	nrf_wdt_reload_request_enable(NRF_WDT_RR0);
+	nrf_wdt_reload_value_set(32768);
+	nrf_wdt_task_trigger(NRF_WDT_TASK_START);
 
 
 	current_pose.lift = -32768;
@@ -57,7 +58,7 @@ int main(void)
 	pose_offsets.roll = 0;
 	pose_offsets.pitch = 0;
 
-	uint32_t current_spi_address = LSA;
+	uint32_t write_address = LSA;
 	uint32_t current = LSA;
 	LoggedData data;
 
@@ -69,19 +70,12 @@ int main(void)
 
 		if (check_timer_flag()) 
 		{
-			
+
 			adc_request_sample();
 			read_baro();
 
-			// printf("%10ld | ", get_time_us());
-			// printf("%3d %3d %3d %3d | ",motor[0],motor[1],motor[2],motor[3]);
-			// printf("%6d %6d %6d | ", phi, theta, psi);
-			// printf("%6d %6d %6d | ", sp, sq, sr);
-			// printf("%4d | %4ld | %6ld", bat_volt, temperature, pressure);
-			// printf("| %3d %3d %3d %3d ",current_pose.lift,current_pose.roll,current_pose.yaw,current_pose.pitch);
-			// printf("| %u \n", get_current_state());
-			// // printf("Motor setpoints are now: %d %d %d %d\n\n", motor[0], motor[1], motor[2], motor[3]);	
-			clear_timer_flag();	
+			
+			clear_timer_flag();
 		}
 
 		if (check_sensor_int_flag()) 
@@ -90,9 +84,10 @@ int main(void)
 			calibrate_imu();
 			check_safety();
 			run_filters_and_control();
+			send_telemetry();
 		}
 
-		send_telemetry();
+		
 
 		/*Logging*/
 		if ((get_time_us() - old_t) > LOG_FREQ)
@@ -100,7 +95,7 @@ int main(void)
 			old_t = get_time_us();
 
 			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
-			if((current_spi_address = log_data(current_spi_address,&data)) == 0){
+			if((write_address = log_data(write_address,&data)) == 0){
 				printf("Fail to log_data\n");
 				nrf_gpio_pin_toggle(RED);
 			}else{
@@ -115,18 +110,19 @@ int main(void)
 
 	//Sends the log to the PC after flight is done
 	printf("Uploading...");
-	if (send_logger_flag){
-		while(current != current_spi_address)
-		{		if ((get_time_us() - old_t) > SEND_FREQ) 
-				{
+	if (send_logger_flag)
+	{
+		while(current != write_address)
+		{
+			if ((get_time_us() - old_t) > SEND_FREQ) 
+			{
 				old_t = get_time_us();
 				nrf_gpio_pin_toggle(YELLOW);
 				nrf_gpio_pin_toggle(BLUE);
 				nrf_gpio_pin_toggle(RED);
 				nrf_gpio_pin_toggle(GREEN);
 				current = send_log_data(current);	
-
-				}
+			}
 		}
 			//printf(".");	
 	}
