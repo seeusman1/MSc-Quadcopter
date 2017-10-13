@@ -158,7 +158,8 @@ void handle_message()
 		if (r_flag && m_flag && s_flag && a_flag && !term && p_flag)
 		{
 			#ifdef PROFILING
-			printf("Control:%4d,Tele:%4d|",pr_cont_time,pr_tele_time);
+			printf("Ctrl:%4d,Tele:%4d|",pr_cont_time,pr_tele_time);
+			printf("Coms:%4d,Log:%4d|",pr_comm_time,pr_log_time);
 			#endif
 			printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
 			printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);

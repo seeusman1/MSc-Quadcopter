@@ -34,8 +34,10 @@
 bool demo_done;
 
 #ifdef PROFILING 
-uint32_t cont_time;
-uint32_t tele_time;
+uint16_t cont_time;
+uint16_t tele_time;
+uint16_t comm_time;
+uint16_t log_time;
 uint32_t new_t;
 #endif
 

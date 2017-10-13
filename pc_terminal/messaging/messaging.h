@@ -26,12 +26,15 @@ int fd_RS232;
 LoggedData* loggdata;
 uint8_t* ptr_data;
 
-int pr_motor[4];
-int pr_batt,pr_temp,pr_mode;
-int pr_psi,pr_theta,pr_phi;
-int pr_sp,pr_sq,pr_sr; 
-int pr_cont_time;
-int pr_tele_time;
+uint16_t pr_motor[4];
+uint16_t pr_batt;
+int32_t pr_temp,pr_mode;
+int16_t pr_psi,pr_theta,pr_phi;
+int16_t pr_sp,pr_sq,pr_sr; 
+uint16_t pr_cont_time;
+uint16_t pr_tele_time;
+uint16_t pr_comm_time;
+uint16_t pr_log_time;
 
 
 void handle_message();

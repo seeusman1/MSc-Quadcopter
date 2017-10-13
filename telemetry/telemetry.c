@@ -30,9 +30,9 @@ void send_angles(){
 	uint8_t i;
 	AngleMessage a_msg;
 	a_msg.id = ANGLE;
-	a_msg.phi = phi;
-	a_msg.theta = theta;
-	a_msg.psi = psi;
+	a_msg.phi = (int16_t) phi;
+	a_msg.theta = (int16_t) theta;
+	a_msg.psi = (int16_t) psi;
 	
 	char* ptr_data = (char*) &a_msg.phi;
 
@@ -50,9 +50,9 @@ void send_rates(){
 	uint8_t i;
 	RateMessage r_msg;
 	r_msg.id = RATE;
-	r_msg.sp = sp;
-	r_msg.sq = sq;
-	r_msg.sr = sr;
+	r_msg.sp = (int16_t) sp;
+	r_msg.sq = (int16_t) sq;
+	r_msg.sr = (int16_t) sr;
 	
 	char* ptr_data = (char*) &r_msg.sp;
 	
@@ -90,8 +90,10 @@ void send_profiling(){
 	uint8_t i;
 	ProfMessage p_msg;
 	p_msg.id = PROF;
-	p_msg.cont_time = cont_time;
-	p_msg.tele_time = tele_time;
+	p_msg.cont_time = (uint16_t) cont_time;
+	p_msg.tele_time = (uint16_t) tele_time;
+	p_msg.comm_time = (uint16_t) comm_time;
+	p_msg.log_time = (uint16_t) log_time;
 
 	char* ptr_data = (char*) &p_msg.cont_time;
 	

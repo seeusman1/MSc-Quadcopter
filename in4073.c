@@ -62,15 +62,20 @@ int main(void)
 	LoggedData data;
 
 	while (!demo_done)
-	{
+	{	
+		#ifdef PROFILING
+		new_t = get_time_us();
 		handle_communication();
+		comm_time = get_time_us() - new_t;
+		#else
+		handle_communication();
+		#endif
 
 		if (check_timer_flag()) 
 		{
 			adc_request_sample();
 			read_baro();
 			clear_timer_flag();
-
 		}
 
 
@@ -97,7 +102,9 @@ int main(void)
 		if ((get_time_us() - old_t) > LOG_FREQ)
 		{	
 			old_t = get_time_us();
-
+			#ifdef PROFILING
+			new_t = get_time_us();
+			#endif
 			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
 			if((write_address = log_data(write_address,&data)) == 0){
 				printf("Fail to log_data\n");
@@ -106,7 +113,9 @@ int main(void)
 				send_logger_flag = 1;
 				nrf_gpio_pin_toggle(YELLOW);
 			}
-			
+			#ifdef PROFILING
+			log_time = get_time_us() - new_t;
+			#endif
 		}
 			
 	}	
