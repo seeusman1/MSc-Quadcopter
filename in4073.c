@@ -38,7 +38,7 @@ int main(void)
 	spi_flash_init();
 	ble_init();
 	init_statemanager();
-	uint32_t counter = 0;
+	//uint32_t counter = 0;
 	demo_done = false;
 	uint32_t old_t = 0;
 
