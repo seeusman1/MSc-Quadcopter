@@ -14,11 +14,10 @@
 #include <pthread.h>
 #include <errno.h>
 
-
+#include "interface.h"
 #include "../joystick.h"
 #include "../../protocol.h"
 #include "../../crc/crc.h"
-#define JS_DEV	"/dev/input/js0"
 
 //#define JOYSTICK_PRESENT
 
