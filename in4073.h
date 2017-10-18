@@ -45,6 +45,7 @@ int send_logger_flag;
 #define JS_CALIBRATION_STEP 50
 
 // Control
+#define BW_FREQ 3000
 int16_t motor[4],ae[4];
 
 JoystickPose current_pose;
