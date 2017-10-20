@@ -12,13 +12,14 @@
 
 #include "in4073.h"
 #include "statemanager/statemanager.h"
+#include "filtering/butterworth.h"
 
 #define MAX_SETPOINT 900
 #define MIN_SETPOINT 168 // needs to check at what value rotor starts spinning
 uint32_t P = 4;
 uint32_t P1 = 1;
 uint32_t P2 = 4; // P2 >= 4*P1
-
+uint32_t old_t = 0;
 void update_motors(void)
 {					
 
@@ -226,6 +227,14 @@ void run_filters_and_control()
 		default:
 			printf("Control encountered unexpected mode %u\n", get_current_state());
 			break;
+	}
+	/*BW filter test implementation*/
+	/*Frequency set on in4073.h*/
+	if ((get_time_us() - old_t) > BW_FREQ)
+	{	
+		old_t = get_time_us();
+	    printf("%d,%d\n", sr, bw_filter((int32_t) sr));
+
 	}
 	// fancy stuff here
 	// control loops and/or filters
