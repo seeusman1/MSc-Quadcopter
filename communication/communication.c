@@ -52,14 +52,33 @@ void process_key(uint8_t c)
 				P -= 1;
 			}
 			break;
+
+		case 'i':
+			P1 += 1;
+			break;
+		case 'k':
+			if(P1 > 0) {
+				P1 -= 1;
+			}
+			break;
+		case 'o':
+			P2 += 1;
+			break;
+		case 'l':
+			if(P2 > 0) {
+				P2 -= 1;
+			}
+			break;
+
+
 		case 28:
 			//UP
 			printf("Increment\n");
-			pose_offsets.pitch -= JS_CALIBRATION_STEP;
+			pose_offsets.pitch += JS_CALIBRATION_STEP;
 			break;
 		case 29:
 			//DOWN
-			pose_offsets.pitch += JS_CALIBRATION_STEP;
+			pose_offsets.pitch -= JS_CALIBRATION_STEP;
 			break;
 		case 30:
 			//RIGHT
@@ -86,6 +105,9 @@ void process_key(uint8_t c)
 			break;
 		case '5':
 			try_transition(FULLCONTROL);
+			break;
+		case '7':
+			try_transition(HEIGHTCONTROL);
 			break;
 		case 27:
 			demo_done = true;
@@ -116,6 +138,7 @@ void handle_message(GenericMessage *message)
 		{
 			JoystickMessage *joymsg = (JoystickMessage*) message;
 			current_pose = joymsg->pose;
+			current_pose.yaw = -current_pose.yaw; 
 			calibrate_js();
 
 			//this is also used as a heartbeat, so reset the watchdog timer.

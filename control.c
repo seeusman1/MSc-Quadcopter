@@ -16,8 +16,10 @@
 #define MAX_SETPOINT 900
 #define MIN_SETPOINT 200 // needs to check at what value rotor starts spinning
 uint32_t P = 10;
-uint32_t P1 = 1;
-uint32_t P2 = 4; // P2 >= 4*P1
+uint32_t P1 = 2;
+uint32_t P2 = 8; // P2 >= 4*P1
+uint32_t P_height = 10;
+uint32_t scale = 256;
 
 void update_motors(void)
 {					
@@ -76,8 +78,7 @@ void update_motors(void)
 
 
 
-
-
+	//setting angle limitations
 
 	if ((ae[0] == MIN_SETPOINT) && (ae[2] > 600)){
 		ae[2] = 600;
@@ -127,10 +128,10 @@ void update_motors(void)
 	
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = Z + M/4 - N/4;
-		ae[1] = Z -L/4 + N/4;
-		ae[2] = Z - M/4 - N/4;
-		ae[3] = Z + L/4 + N/4;
+		ae[0] = Z + M/4 - N/8;
+		ae[1] = Z -L/4 + N/8;
+		ae[2] = Z - M/4 - N/8;
+		ae[3] = Z + L/4 + N/8;
 		speed_limit_check();
 	}else {
 		ae[0] = 0;
@@ -150,18 +151,18 @@ void yaw_control() {
 	}	
 
 
-	int32_t L = (current_pose.roll)/64;
-	int32_t M = (current_pose.pitch)/64;
-	int32_t N = (current_pose.yaw)/64;
+	int32_t L = (current_pose.roll)/scale;
+	int32_t M = (current_pose.pitch)/scale;
+	int32_t N = (current_pose.yaw)/scale;
 	
-	int32_t N_new = P * (N-(sr/32)); // P controller	
+	N = P * (N-(sr/32)); // P controller	
 
 	if (Z >= MIN_SETPOINT){
 	
-		ae[0] = Z + M/4 + N_new/4;
-		ae[1] = Z -L/4 - N_new/4;
-		ae[2] = Z - M/4 + N_new/4;
-		ae[3] = Z + L/4 - N_new/4;
+		ae[0] = Z + M/4 + N/8;
+		ae[1] = Z -L/4 - N/8;
+		ae[2] = Z - M/4 + N/8;
+		ae[3] = Z + L/4 - N/8;
 		speed_limit_check();
 	}else {
 		ae[0] = 0;
@@ -185,16 +186,14 @@ void full_control() {
 	}	
 
 
-	int32_t L = (current_pose.roll)/64;
-	int32_t M = (current_pose.pitch)/64;
-	int32_t N = (current_pose.yaw)/64;
+	int32_t L = (current_pose.roll)/scale;
+	int32_t M = (current_pose.pitch)/scale;
+	int32_t N = (current_pose.yaw)/scale;
 
-	//uint8_t A1=1;
-	//uint8_t A2=1;
 	
 	N = P * (N-(sr/32)); // P controller for Yaw
-	L = P2 * (P1 * (L - phi/32) - sp/32); // Cascaded P controller for Roll 
-	M = P2 * (P1 * (M - theta/32) + sq/32);//Cascaded P controller for Pitch
+	L = P2 * ((P1 * ((L - phi/32)/2) - sp/32)/2); // Cascaded P controller for Roll 
+	M = P2 * ((P1 * ((M - theta/32)/2) + sq/32)/2);//Cascaded P controller for Pitch
 	
 
 	if (Z >= MIN_SETPOINT){
@@ -213,6 +212,49 @@ void full_control() {
 
 }
 
+
+void height_control() {
+
+
+	int32_t Z;
+	if (current_pose.lift < 0 ){
+		Z = (current_pose.lift + INT16_MAX)/82;
+	}else {
+		Z = 400 + current_pose.lift/109; // at high speed, changing thrust becomes less sensitive
+	}	
+
+	//check condition that Z should not change
+
+	int32_t L = (current_pose.roll)/scale;
+	int32_t M = (current_pose.pitch)/scale;
+	int32_t N = (current_pose.yaw)/scale;
+
+		
+
+	//implement Z controller
+	int32_t Z_new = Z + P_height * (pressure - pressure_ref);
+
+	
+	N = P * (N-(sr/32)); // P controller for Yaw
+	L = P2 * ((P1 * ((L - phi/32)/2) - sp/32)/2); // Cascaded P controller for Roll 
+	M = P2 * ((P1 * ((M - theta/32)/2) + sq/32)/2);//Cascaded P controller for Pitch
+	
+
+	if (Z >= MIN_SETPOINT){
+	
+		ae[0] = Z_new + M/4 + N/8;
+		ae[1] = Z_new -L/4 - N/8;
+		ae[2] = Z_new - M/4 + N/8;
+		ae[3] = Z_new + L/4 - N/8;
+		speed_limit_check();
+	}else {
+		ae[0] = 0;
+		ae[1] = 0;
+		ae[2] = 0;
+		ae[3] = 0;
+	}
+
+}
 
 
 
@@ -257,6 +299,9 @@ void run_filters_and_control()
 			break;
 		case FULLCONTROL:
 			full_control();
+			break;
+		case HEIGHTCONTROL:
+			height_control();
 			break;
 		default:
 			printf("Control encountered unexpected mode %u\n", get_current_state());

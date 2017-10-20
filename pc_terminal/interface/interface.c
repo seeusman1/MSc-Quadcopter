@@ -393,6 +393,10 @@ ModeMessage rs232_createMsg_mode(char c){
 		case '6':
 		case '7':
 		case '8':
+		case 'i':
+		case 'k':
+		case 'o':
+		case 'l':
 		msg.mode = c;
 		break;
 		//ARROW KEYS-only active when arrow key is pressed

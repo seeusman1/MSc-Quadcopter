@@ -23,6 +23,11 @@
 #include <math.h>
 #include "protocol.h"
 
+extern uint32_t P;
+extern uint32_t P1;
+extern uint32_t P2;
+uint32_t pressure_ref;
+uint32_t thrust_ref;
 
 #define RED		22
 #define YELLOW		24

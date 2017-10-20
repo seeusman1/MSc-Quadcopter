@@ -154,7 +154,7 @@ void handle_message()
 			 printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
 			 printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);
 			 printf("%6d %6d %6d | ", pr_sp, pr_sq, pr_sr);
-			 printf("%4d | %4d | %1d\n", pr_batt, pr_temp, pr_mode);
+			 printf("%4d | %4d | %1d\n ", pr_batt, pr_temp, pr_mode);
 			
 		}
          	

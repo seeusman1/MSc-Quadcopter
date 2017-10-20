@@ -5,6 +5,8 @@
  * Author Rutger van den Berg
  * Lists all modes the quadcopter can be in.
  */
+
+
 typedef enum {
 	SAFE, 
 	PANIC,
@@ -12,6 +14,7 @@ typedef enum {
 	CALIBRATION,
 	YAWCONTROL,
 	FULLCONTROL,
+	HEIGHTCONTROL = 7,
 	MODE_COUNT
 } __attribute__ ((__packed__)) state_t;
 /*
