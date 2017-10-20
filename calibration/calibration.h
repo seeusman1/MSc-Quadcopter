@@ -26,4 +26,13 @@ void calibrate_js();
  * Returns true iff the sensors have been calibrated.
  */
 bool is_calibrated();
+
+/*
+ * Author: Rutger van den Berg
+ * Reset the calibration state. Forgets about all saved values. 
+ * is_calibrated() will return false until the calibration routing has been used again.
+ */
+void reset_calibration();
+
+
 #endif //__CALIBRATION_CALIBRATION_H_

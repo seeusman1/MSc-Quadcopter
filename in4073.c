@@ -22,6 +22,7 @@
 #include "safety/safety.h"
 #include "logging/logging.h"
 #include "telemetry/telemetry.h"
+#include "filtering/kalman.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -80,7 +81,14 @@ int main(void)
 
 		if (check_sensor_int_flag()) 
 		{
-			get_dmp_data();
+			if(is_raw()) {
+				get_raw_sensor_data();
+				kalman_filter();
+
+			} else {
+				get_dmp_data();	
+			}
+			
 			calibrate_imu();
 			check_safety();
 			run_filters_and_control();
@@ -98,7 +106,7 @@ int main(void)
 			if((write_address = log_data(write_address,&data)) == 0){
 				printf("Fail to log_data\n");
 				nrf_gpio_pin_toggle(RED);
-			}else{
+			} else{
 				send_logger_flag = 1;
 				nrf_gpio_pin_toggle(YELLOW);
 			}

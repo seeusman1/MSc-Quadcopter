@@ -79,3 +79,21 @@ void calibrate_js() {
 	current_pose.pitch = calibrate_value(current_pose.pitch, pose_offsets.pitch);
 	current_pose.yaw = calibrate_value(current_pose.yaw, pose_offsets.yaw);
 }
+
+/*
+ * Author: Rutger van den Berg
+ * Reset the calibration state. Forgets about all saved values. 
+ * is_calibrated() will return false until the calibration routing has been used again.
+ */
+void reset_calibration() {
+	sp_offset = 0;
+	sq_offset = 0;
+	sr_offset = 0;
+	sax_offset = 0;
+	say_offset = 0;
+	saz_offset = 0;
+	phi_offset = 0;
+	theta_offset = 0;
+	psi_offset = 0;
+	calibrated = false;
+}

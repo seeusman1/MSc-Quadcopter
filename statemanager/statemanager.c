@@ -3,7 +3,7 @@
 #include "../calibration/calibration.h"
 bool allowed_transitions [MODE_COUNT][MODE_COUNT];
 state_t current_state = SAFE;
-
+bool _is_raw = false;
 /*
  * Author: Rutger van den Berg
  * Checks if transitioning to state to is legal.
@@ -67,4 +67,24 @@ void init_statemanager() {
  */
 state_t get_current_state() {
 	return current_state;
+}
+
+/*
+ * Author: Rutger van den Berg
+ * Returns true iff the drone is set to use the IMU in raw mode.
+ */
+bool is_raw() {
+	return _is_raw;
+}
+
+/*
+ * Author: Rutger van den Berg
+ * Attempts to switch the drone to raw mode if raw is true, else attempts to switch to DMP mode.
+ */
+void set_raw(bool raw) {
+	//Only switch sensor modes when in safe mode.
+	if (raw != _is_raw && get_current_state() == SAFE) {
+		_is_raw = raw;
+		reset_calibration();
+	}
 }
