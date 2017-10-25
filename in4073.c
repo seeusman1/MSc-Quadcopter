@@ -88,13 +88,14 @@ int main(void)
 				kalman_filter();
 			} else {
 				get_dmp_data();
+
 				calibrate_imu();
 				phi = sphi;
 				theta = stheta;
 				psi = spsi;
 			}
 			
-
+			pressure = bw_filter((int32_t) (pressure));
 			check_safety();
 			run_filters_and_control();
 			send_telemetry();

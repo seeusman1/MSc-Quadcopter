@@ -1,7 +1,8 @@
 #include "safety.h"
 #include "in4073.h"
 #include "../statemanager/statemanager.h"
-
+uint8_t bat_exceeded = 0;
+const uint8_t BAT_EXCEEDED_THRESHOLD = 20;
 /* 
  * Author Rutger van den Berg
  * Checks safety conditions and switches to emergency mode if one of them is violated.
@@ -25,8 +26,13 @@ void check_safety() {
  */
 bool check_battery() {
 	if(get_current_state() > SAFE && bat_volt < BAT_THRESHOLD) {
-		printf("[SAFETY] Battery voltage too low.\n");
-		return false;
+		++bat_exceeded;
+		if(bat_exceeded > BAT_EXCEEDED_THRESHOLD) {
+			printf("[SAFETY] Battery voltage too low.\n");
+			return false;
+		}
+	} else {
+		bat_exceeded = 0;
 	}
 	return true;
 }
