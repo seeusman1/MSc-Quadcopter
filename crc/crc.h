@@ -17,7 +17,7 @@ _Static_assert(sizeof(CRCMessage) == CRC_MESSAGE_SIZE, "CRCMessage size incorrec
 
 
 //Computing CRC bits
-/*
+/*Author: Muhammad Usman Saleem
  * Computes 8bit CRC for CRC_PAYLOAD_SIZE bytes starting at the provided pointer.
  */
 uint8_t compute_crc8 (char *payload)
@@ -41,8 +41,8 @@ uint8_t compute_crc8 (char *payload)
 	return crc;
 }
 /*
+ * Author: Muhammad Usman Saleem
  * Returns true iff the crc in the message is correct. 
-
  * Calculates 8bit crc over the header plus payload, and compares it to the crc stored in the message. 
  */
 bool verify_crc(CRCMessage *message) {
@@ -54,6 +54,7 @@ bool verify_crc(CRCMessage *message) {
 	return true;
 }
 /*
+ * Author: Muhammad Usman Saleem
  * Creates a packet with the provided payload.
  * Will assign the header and calculate the crc over the header plus the payload.
  */ 

@@ -12,6 +12,7 @@
 
 #include "in4073.h"
 #include "statemanager/statemanager.h"
+#include "filtering/butterworth.h"
 
 #define MAX_SETPOINT 900
 #define MIN_SETPOINT 200 // needs to check at what value rotor starts spinning
@@ -32,23 +33,9 @@ void update_motors(void)
 }
 
 /*
- * Author: Rutger van den Berg
- * Control step for manual mode. 
- */
-/* void manual() {
-	// int16_t B = 1;
-	// int16_t D = 1;
-	int32_t Z = current_pose.lift;
-	int32_t L = current_pose.roll;
-	int32_t M = current_pose.pitch;
-	int32_t N = current_pose.yaw;
-	ae[0] = (-Z/4 + M/2 - -N/4 + INT16_MAX) /64;
-	ae[1] = (-Z/4 -L/2 + N/4 + INT16_MAX) /64;
-	ae[2] = (-Z/4 - M/2 - N/4 + INT16_MAX) /64;
-	ae[3] = (-Z/4 + L/2 + N/4 + INT16_MAX) /64;
-} */
-
-
+ * Author Muhammad Usman Saleem
+ * checks that no motor stops during flight and setting angle limitations
+ */ 
 
  void speed_limit_check() {
 
@@ -112,6 +99,11 @@ void update_motors(void)
 		
 }
 
+/*
+ * Author Muhammad Usman Saleem
+ * Manual mode implementation
+ */ 
+
  void manual() {
 	
 	int32_t Z;
@@ -140,6 +132,11 @@ void update_motors(void)
 		ae[3] = 0;
 	}
 }
+
+/*
+ * Author Muhammad Usman Saleem
+ * Yaw control Implementation.
+ */ 
 
 void yaw_control() {
 
@@ -174,6 +171,10 @@ void yaw_control() {
 }
 
 
+/*
+ * Author Muhammad Usman Saleem
+ * Full Control Implementation
+ */ 
 
 void full_control() {
 
@@ -213,8 +214,19 @@ void full_control() {
 }
 
 
+/*
+ * Author Muhammad Usman Saleem
+ * Height Control Implementation
+ */ 
+
 void height_control() {
 
+	//check that thrust is not changed
+	if (((current_pose.lift - thrust_ref) > 100) || ((-current_pose.lift + thrust_ref) > 100)) {
+		printf ("Thrust has been changed. Switching to Full control \n");
+		try_transition(FULLCONTROL);
+	}
+	
 
 	int32_t Z;
 	if (current_pose.lift < 0 ){
@@ -230,9 +242,9 @@ void height_control() {
 	int32_t N = (current_pose.yaw)/scale;
 
 		
+	uint32_t pressure_fil = bw_filter((int32_t) (pressure)); // filtering pressure value
 
-	//implement Z controller
-	int32_t Z_new = Z + P_height * (pressure - pressure_ref);
+	int32_t Z_new = Z + P_height * (pressure_fil - pressure_ref);//height controller
 
 	
 	N = P * (N-(sr/32)); // P controller for Yaw
@@ -274,11 +286,15 @@ void panic() {
 }
 
 void safe() {
-	ae[0] = 0;//(current_pose.lift/64) + 512;
-	ae[1] = 0;//(current_pose.lift/64) + 512;
-	ae[2] = 0;//(current_pose.lift/64) + 512;
-	ae[3] = 0;//(current_pose.lift/64) + 512;
+	ae[0] = 0;
+	ae[1] = 0;
+	ae[2] = 0;
+	ae[3] = 0;
 }
+
+/*
+ * Author Muhammad Usman Saleem
+ */ 
 
 void run_filters_and_control()
 {	
@@ -307,9 +323,6 @@ void run_filters_and_control()
 			printf("Control encountered unexpected mode %u\n", get_current_state());
 			break;
 	}
-	// fancy stuff here
-	// control loops and/or filters
 
-	// ae[0] = xxx, ae[1] = yyy etc etc
 	update_motors();
 }

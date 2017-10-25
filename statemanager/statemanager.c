@@ -1,6 +1,7 @@
 #include "statemanager.h"
 #include "../in4073.h"
 #include "../calibration/calibration.h"
+#include "../filtering/butterworth.h"
 bool allowed_transitions [MODE_COUNT][MODE_COUNT];
 state_t current_state = SAFE;
 
@@ -22,7 +23,7 @@ bool check_conditions(state_t to) {
 	if(to == HEIGHTCONTROL && !is_calibrated()) {
 		return false;
 	}
-	if ((to == MANUAL || to == YAWCONTROL || to == FULLCONTROL || to ==HEIGHTCONTROL) && current_pose.lift > -32000) {
+	if ((to == MANUAL || to == YAWCONTROL || to == FULLCONTROL ) &&  current_state != HEIGHTCONTROL && current_pose.lift > -32000) {
 		printf("Lift>0\n");
 		return false;
 	}
@@ -40,7 +41,11 @@ bool try_transition(state_t to) {
 	if(check_conditions(to)) {
 		current_state = to;
 		if (current_state == HEIGHTCONTROL){
-			pressure_ref = pressure;
+			for (int i=0;i<100;i++){
+				pressure_ref = bw_filter((int32_t) (pressure));
+			}
+			
+			thrust_ref = current_pose.lift;
 		}
 			
 		return true;
@@ -67,7 +72,6 @@ void init_statemanager() {
 	allowed_transitions[FULLCONTROL][SAFE] = true;
 	allowed_transitions[FULLCONTROL][PANIC] = true;
 	allowed_transitions[FULLCONTROL][HEIGHTCONTROL] = true;
-	allowed_transitions[SAFE][HEIGHTCONTROL] = true;
 	allowed_transitions[HEIGHTCONTROL][SAFE] = true;
 	allowed_transitions[HEIGHTCONTROL][PANIC] = true;
 	allowed_transitions[HEIGHTCONTROL][FULLCONTROL] = true;

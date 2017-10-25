@@ -26,6 +26,7 @@
 extern uint32_t P;
 extern uint32_t P1;
 extern uint32_t P2;
+extern uint32_t P_height;
 uint32_t pressure_ref;
 uint32_t thrust_ref;
 

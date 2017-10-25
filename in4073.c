@@ -73,9 +73,6 @@ int main(void)
 
 			adc_request_sample();
 			read_baro();
-
-			printf ("%u %u %u \n", P, P1, P2);
-			//printf ("Pressure: %4ld | Psi: %6d | Saz: %6d\n", pressure, psi, saz);
 			clear_timer_flag();
 		}
 

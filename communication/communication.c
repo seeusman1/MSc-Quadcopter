@@ -69,6 +69,14 @@ void process_key(uint8_t c)
 				P2 -= 1;
 			}
 			break;
+		case 't':
+			P_height += 2;
+			break;
+		case 'g':
+			if(P_height > 1) {
+				P_height -= 2;
+			}
+			break;
 
 
 		case 28:
@@ -179,6 +187,7 @@ bool detect_header()
 }
 
 /*
+ * Author Muhammad Usman Saleem
  * Read a single message from the UART rx buffer.
  */ 
  bool read_message(CRCMessage *message) {
