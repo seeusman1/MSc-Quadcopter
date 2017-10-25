@@ -77,19 +77,19 @@ _Static_assert(sizeof(MotorMessage) == MESSAGE_SIZE, "MotorMessage size is incor
 
 typedef struct {
 	MessageId id : 8;
-	uint16_t phi;		
-	uint16_t theta;		
-	uint16_t psi;
-	uint8_t padding[2];		
+	int16_t phi;		
+	int16_t theta;		
+	int16_t psi;
+	int8_t padding[2];		
 } __attribute__((packed)) AngleMessage;
 _Static_assert(sizeof(AngleMessage) == MESSAGE_SIZE, "AngleMessage size is incorrect.");
 
 typedef struct {
 	MessageId id : 8;
-	uint16_t sp;			
-	uint16_t sq;		
-	uint16_t sr;		
-	uint8_t padding[2];		
+	int16_t sp;			
+	int16_t sq;		
+	int16_t sr;		
+	int8_t padding[2];		
 } __attribute__((packed)) RateMessage;
 _Static_assert(sizeof(RateMessage) == MESSAGE_SIZE, "RateMessage size is incorrect.");
 

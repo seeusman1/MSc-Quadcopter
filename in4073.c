@@ -73,14 +73,13 @@ int main(void)
 
 			adc_request_sample();
 			read_baro();
-
-			
 			clear_timer_flag();
 		}
 
 		if (check_sensor_int_flag()) 
 		{
 			get_dmp_data();
+			pressure = bw_filter((int32_t) (pressure));
 			calibrate_imu();
 			check_safety();
 			run_filters_and_control();
@@ -107,6 +106,7 @@ int main(void)
 		
 			
 	}	
+
 
 	//Sends the log to the PC after flight is done
 	printf("Uploading...");
