@@ -27,7 +27,7 @@ extern uint32_t P;
 extern uint32_t P1;
 extern uint32_t P2;
 extern uint32_t P_height;
-uint32_t pressure_ref, pressure;
+uint32_t pressure_ref;
 uint32_t thrust_ref;
 
 #define RED		22
@@ -38,19 +38,19 @@ uint32_t thrust_ref;
 
 
 bool demo_done;
-
 //Logging
 #define SEND_FREQ 20000
 #define LOG_FREQ 20000
 #define LSA 0x000000 //Data Logger Start Adress 
 int logger_flag;
 int send_logger_flag; 
-
-
+#define SENSOR_RAW_FREQUENCY 500
+#define SENSOR_DMP_FEQUENCY 100
 //Keyboard Arrow Offsets
 #define JS_CALIBRATION_STEP 50
 
 // Control
+#define BW_FREQ 3000
 int16_t motor[4],ae[4];
 
 JoystickPose current_pose;
@@ -97,7 +97,9 @@ bool i2c_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *dat
 
 // MPU wrapper
 int16_t phi, theta, psi;
+int16_t sphi, stheta, spsi;
 int16_t sp, sq, sr;
+int16_t p, q, r;
 int16_t sax, say, saz;
 uint8_t sensor_fifo_count;
 void imu_init(bool dmp, uint16_t interrupt_frequency); // if dmp is true, the interrupt frequency is 100Hz - otherwise 32Hz-8kHz

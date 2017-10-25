@@ -292,10 +292,6 @@ void safe() {
 	ae[3] = 0;
 }
 
-/*
- * Author Muhammad Usman Saleem
- */ 
-
 void run_filters_and_control()
 {	
 	switch (get_current_state())

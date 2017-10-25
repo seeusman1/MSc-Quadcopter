@@ -49,5 +49,17 @@ state_t get_current_state();
  */
 void init_statemanager();
 
+/*
+ * Author: Rutger van den Berg
+ * Returns true iff the drone is set to use the IMU in raw mode.
+ */
+bool is_raw();
+
+/*
+ * Author: Rutger van den Berg
+ * Attempts to switch the drone to raw mode if raw is true, else attempts to switch to DMP mode.
+ */
+void set_raw(bool raw);
+
 
 #endif //__STATEMANAGER_H

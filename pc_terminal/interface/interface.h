@@ -4,7 +4,7 @@
 #define JOYSTICK_PRESENT
 
 #include "../../protocol.h"
-#define JS_DEV	"/dev/input/js0"
+#define JS_DEV	"/dev/input/js1"
 /*------------------------------------------------------------
  * Serial
  *------------------------------------------------------------

@@ -48,9 +48,9 @@ void calibrate_imu() {
 		say_offset = -say;
 		saz_offset = -saz;
 
-		phi_offset = -phi;
-		theta_offset = -theta;
-		psi_offset = -psi;
+		phi_offset = -sphi;
+		theta_offset = -stheta;
+		psi_offset = -spsi;
 
 		calibrated = true;
 	} else {
@@ -62,9 +62,9 @@ void calibrate_imu() {
 		say = calibrate_value(say, say_offset);
 		saz = calibrate_value(saz, saz_offset);
 
-		phi = calibrate_value(phi, phi_offset);
-		theta = calibrate_value(theta, theta_offset);
-		psi = calibrate_value(psi, psi_offset);
+		phi = calibrate_value(sphi, phi_offset);
+		theta = calibrate_value(stheta, theta_offset);
+		psi = calibrate_value(spsi, psi_offset);
 	}
 }
 
@@ -78,4 +78,22 @@ void calibrate_js() {
 	current_pose.roll = calibrate_value(current_pose.roll, pose_offsets.roll);
 	current_pose.pitch = calibrate_value(current_pose.pitch, pose_offsets.pitch);
 	current_pose.yaw = calibrate_value(current_pose.yaw, pose_offsets.yaw);
+}
+
+/*
+ * Author: Rutger van den Berg
+ * Reset the calibration state. Forgets about all saved values. 
+ * is_calibrated() will return false until the calibration routing has been used again.
+ */
+void reset_calibration() {
+	sp_offset = 0;
+	sq_offset = 0;
+	sr_offset = 0;
+	sax_offset = 0;
+	say_offset = 0;
+	saz_offset = 0;
+	phi_offset = 0;
+	theta_offset = 0;
+	psi_offset = 0;
+	calibrated = false;
 }

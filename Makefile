@@ -71,6 +71,7 @@ $(abspath ./statemanager/statemanager.c) \
 $(abspath ./logging/logging.c) \
 $(abspath ./safety/safety.c) \
 $(abspath ./telemetry/telemetry.c) \
+$(abspath ./filtering/kalman.c) \
 $(abspath ./filtering/butterworth.c) \
 
 #assembly files common to all targets

@@ -114,6 +114,12 @@ void process_key(uint8_t c)
 		case '5':
 			try_transition(FULLCONTROL);
 			break;
+		case '6':
+			if(!get_current_state() == SAFE) {
+				printf("May only switch to raw mode in SAFE mode.\n");
+				break;
+			}
+			set_raw(!is_raw());
 		case '7':
 			try_transition(HEIGHTCONTROL);
 			break;
