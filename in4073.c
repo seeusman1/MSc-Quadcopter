@@ -23,6 +23,7 @@
 #include "logging/logging.h"
 #include "telemetry/telemetry.h"
 #include "filtering/kalman.h"
+#include "filtering/butterworth.h"
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
