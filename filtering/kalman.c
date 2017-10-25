@@ -1,30 +1,29 @@
 #include "kalman.h"
 #include "../in4073.h"
-constexpr ATTITUDE_BITS_PER_DEGREE = 32768/90; 	// -2^15 to +2^15 for -90 degrees to +90 degrees
-constexpr P2DEGREE_DIVIDER = 16.4/1000; 		//16.4 lsb/degree/sec, and period is measured in ms
-constexpr P2PHI = ATTITUDE_BITS_PER_DEGREE/P2DEGREE_DIVIDER; //we want to go from degrees/second to degrees, so multiply P by the period
+#include "fixedptc.h"
 
+fixedptd P2PHI = 0;
 
-#define C1 100
-#define C2 1000000
+fixedptd C1;
+fixedptd C2;
 
 extern int16_t p, q;			// Angular rate output. filtered.
 extern int16_t phi, theta; 		// Attitude output. filtered.
 extern int16_t sp, sq; 			// Angular rate input. updated by Gyro
 extern int16_t sphi, stheta;	// Attitude input. updated by ?
-
-uint32_t previous_sample_time = 0;
-uint32_t period_ms = 0;
+;
 int16_t p_b, q_b;				//Estimated angular rate bias
 
-uint16_t get_angle_change() {
-	int32_t p_temp = p * 1024;
-
-
+void kalman_init() {
+	C1 = fixedpt_fromint(100);
+	C2 = fixedpt_fromint(1000000);
+	fixedptd MAX_VALUE_ATTITUDE = fixedpt_fromint(32768);
+	fixedptd MAX_DEGREES_ATTITUDE = fixedpt_fromint(90);
+	fixedptd ATTITUDE_BITS_PER_DEGREE = fixedpt_div(MAX_VALUE_ATTITUDE, MAX_DEGREES_ATTITUDE);
+	fixedptd P_RESOLUTION = fixedpt_div(fixedpt_fromint(164), fixedpt_fromint(10));
+	fixedptd P2DEGREE_DIVIDER = fixedpt_div(P_RESOLUTION, fixedpt_fromint(SENSOR_RAW_FREQUENCY));
+	P2PHI = fixedpt_div(ATTITUDE_BITS_PER_DEGREE,P2DEGREE_DIVIDER);
 }
-
-
-
 
 
 void kalman_filter() {
@@ -42,8 +41,8 @@ void kalman_filter() {
 	 * Uses the previous attitude and the 
 	 * estimated rate to estimate the new attitude.
 	 */
-	phi = phi + p * P2PHI;
-	theta = theta + q * Q2THETA;
+	phi = phi + fixedpt_toint(fixedpt_mul(fixedpt_fromint(p), P2PHI));
+	theta = theta + fixedpt_toint(fixedpt_mul(fixedpt_fromint(q), P2PHI));
 
 	/*
 	 * adjust for bias
@@ -51,8 +50,8 @@ void kalman_filter() {
 	 * Subtract the weighted difference between the 
 	 * measured attitude, and the previous estimate. 
 	 */
-	phi = phi - (sphi - phi) / C1;
-	theta = theta - (stheta - theta) / C1;
+	phi = phi - fixedpt_toint(fixedpt_div(fixedpt_fromint((sphi - phi)), C1));
+	theta = theta - fixedpt_toint(fixedpt_div(fixedpt_fromint((stheta - theta)), C1));
 
 	/*
 	 * update the rate bias estimation.
@@ -60,21 +59,13 @@ void kalman_filter() {
 	 * Uses the weighted difference between the estimated 
 	 * attitude and the measured attitude.
 	 */
-	p_b = p_b + (phi - sphi) / C2;
-	q_b = q_b + (theta - stheta) / C2;
+	p_b = p_b + fixedpt_toint(fixedpt_div(fixedpt_fromint((phi - sphi)), C2));
+	q_b = q_b + fixedpt_toint(fixedpt_div(fixedpt_fromint((theta - stheta)), C2));
 }
 
 void get_raw_attitude() {
-	//only on first call
-	if(previous_sample_time == 0) {
-		previous_sample_time = get_time_us();
-		return;
-	} else {
-		int32_t p_temp = p;
-		period_ms = (get_time_us() - previous_sample_time)/1000;
-		sphi += (period_ms * (p/16400))* ATTITUDE_BITS_PER_DEGREE;
-		stheta += (period_ms * (q/16400)) * ATTITUDE_BITS_PER_DEGREE;
-	}
+	sphi += fixedpt_toint(fixedpt_mul(fixedpt_fromint(p), P2PHI));
+	stheta += fixedpt_toint(fixedpt_mul(fixedpt_fromint(q), P2PHI));
 }
 
 

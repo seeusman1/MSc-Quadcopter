@@ -30,23 +30,6 @@ void update_motors(void)
 	
 }
 
-/*
- * Author: Rutger van den Berg
- * Control step for manual mode. 
- */
-/* void manual() {
-	// int16_t B = 1;
-	// int16_t D = 1;
-	int32_t Z = current_pose.lift;
-	int32_t L = current_pose.roll;
-	int32_t M = current_pose.pitch;
-	int32_t N = current_pose.yaw;
-	ae[0] = (-Z/4 + M/2 - -N/4 + INT16_MAX) /64;
-	ae[1] = (-Z/4 -L/2 + N/4 + INT16_MAX) /64;
-	ae[2] = (-Z/4 - M/2 - N/4 + INT16_MAX) /64;
-	ae[3] = (-Z/4 + L/2 + N/4 + INT16_MAX) /64;
-} */
-
 
 
  void speed_limit_check() {
@@ -233,7 +216,7 @@ void run_filters_and_control()
 	if ((get_time_us() - old_t) > BW_FREQ)
 	{	
 		old_t = get_time_us();
-	    printf("%d,%d\n", sr, bw_filter((int32_t) sr));
+//	    printf("%d,%d\n", sr, bw_filter((int32_t) sr));
 
 	}
 	// fancy stuff here

@@ -85,6 +85,12 @@ void set_raw(bool raw) {
 	//Only switch sensor modes when in safe mode.
 	if (raw != _is_raw && get_current_state() == SAFE) {
 		_is_raw = raw;
+		if(_is_raw) {
+			imu_init(false, SENSOR_RAW_FREQUENCY);
+		} else {
+			imu_init(true, SENSOR_DMP_FEQUENCY);
+		}
+		printf("Raw mode is: %u\n", _is_raw);
 		reset_calibration();
 	}
 }

@@ -48,9 +48,9 @@ void calibrate_imu() {
 		say_offset = -say;
 		saz_offset = -saz;
 
-		phi_offset = -phi;
-		theta_offset = -theta;
-		psi_offset = -psi;
+		phi_offset = -sphi;
+		theta_offset = -stheta;
+		psi_offset = -spsi;
 
 		calibrated = true;
 	} else {
@@ -62,9 +62,9 @@ void calibrate_imu() {
 		say = calibrate_value(say, say_offset);
 		saz = calibrate_value(saz, saz_offset);
 
-		phi = calibrate_value(phi, phi_offset);
-		theta = calibrate_value(theta, theta_offset);
-		psi = calibrate_value(psi, psi_offset);
+		phi = calibrate_value(sphi, phi_offset);
+		theta = calibrate_value(stheta, theta_offset);
+		psi = calibrate_value(spsi, psi_offset);
 	}
 }
 

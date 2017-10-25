@@ -34,7 +34,7 @@ int main(void)
 	timers_init();
 	adc_init();
 	twi_init();
-	imu_init(true, 100);	
+	imu_init(true, SENSOR_DMP_FEQUENCY);
 	baro_init();
 	spi_flash_init();
 	ble_init();
@@ -83,13 +83,18 @@ int main(void)
 		{
 			if(is_raw()) {
 				get_raw_sensor_data();
+				get_raw_attitude();
+				calibrate_imu();
 				kalman_filter();
-
 			} else {
-				get_dmp_data();	
+				get_dmp_data();
+				calibrate_imu();
+				phi = sphi;
+				theta = stheta;
+				psi = spsi;
 			}
 			
-			calibrate_imu();
+
 			check_safety();
 			run_filters_and_control();
 			send_telemetry();
