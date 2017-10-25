@@ -79,6 +79,7 @@ int main(void)
 		if (check_sensor_int_flag()) 
 		{
 			get_dmp_data();
+			pressure = bw_filter((int32_t) (pressure));
 			calibrate_imu();
 			check_safety();
 			run_filters_and_control();

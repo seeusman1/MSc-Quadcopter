@@ -1,7 +1,6 @@
 #include "statemanager.h"
 #include "../in4073.h"
 #include "../calibration/calibration.h"
-#include "../filtering/butterworth.h"
 bool allowed_transitions [MODE_COUNT][MODE_COUNT];
 state_t current_state = SAFE;
 
@@ -41,10 +40,7 @@ bool try_transition(state_t to) {
 	if(check_conditions(to)) {
 		current_state = to;
 		if (current_state == HEIGHTCONTROL){
-			for (int i=0;i<100;i++){
-				pressure_ref = bw_filter((int32_t) (pressure));
-			}
-			
+			pressure_ref = pressure;
 			thrust_ref = current_pose.lift;
 		}
 			

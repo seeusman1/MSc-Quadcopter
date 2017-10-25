@@ -187,7 +187,7 @@ bool detect_header()
 }
 
 /*
- * Author Muhammad Usman Saleem
+ * Author Rutger van den Berg
  * Read a single message from the UART rx buffer.
  */ 
  bool read_message(CRCMessage *message) {
