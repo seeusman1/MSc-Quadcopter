@@ -71,7 +71,7 @@ uint32_t log_data(uint32_t address, LoggedData *data)
 */
 uint32_t send_log_data(uint32_t address)//, LoggedData *data)
 {
-	int i,j;
+	int i;
 	LogMessage msg;
 	LoggedData data;
 	msg.id = LOG;
@@ -80,10 +80,10 @@ uint32_t send_log_data(uint32_t address)//, LoggedData *data)
 	{	
 		char* ptr_data = (char*) &data;
 
-		for (j = 0; j < LOGGER_SIZE; j += PAYLOAD_SIZE)
+		for (i = 0; i < LOGGER_SIZE; i += PAYLOAD_SIZE)
 		{
-			memcpy(&(msg.data[j]), &(ptr_data[j]), sizeof(msg.data));
-			send_message_unsafe((char*) &msg);
+			memcpy(&(msg.data[i]), &(ptr_data[i]), sizeof(msg.data));
+			send_message_unsafe((GenericMessage*) &msg);
 		}
 		address += sizeof(LoggedData);
 		return address;

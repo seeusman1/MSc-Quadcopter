@@ -1,19 +1,20 @@
 #ifndef __COMMUNICATION_H
 #define __COMMUNICATION_H
+#include "protocol.h"
 void handle_communication();
 /*
  * Author Rutger van den Berg
- * Writes 9 bytes from the provided pointer to UART.
- * Assumes that 9 bytes containing a single message can be found at the specified location.
+ *
+ * Sends the provided message to the PC.
  */
-void send_message(char *msg);
+void send_message(GenericMessage* msg);
 
 /*
  * Author Rutger van den Berg
- * Writes 9 bytes from the provided pointer to UART.
- * Assumes that 9 bytes containing a single message can be found at the specified location.
  *
- * Does NOT apply a CRC message integrity check
+ * Sends the provided message to the PC.
+ *
+ * Does NOT use CRC message integrity.
  */
-void send_message_unsafe(char *msg);
+void send_message_unsafe(GenericMessage* msg);
 #endif //__COMMUNICATION_H
