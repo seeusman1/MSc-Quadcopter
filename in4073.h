@@ -38,9 +38,19 @@ uint32_t thrust_ref;
 
 
 bool demo_done;
+
+#define PROFILING
+#ifdef PROFILING 
+uint16_t cont_time;
+uint16_t tele_time;
+uint16_t comm_time;
+uint16_t log_time;
+uint32_t new_t;
+#endif
+
 //Logging
 #define SEND_FREQ 20000
-#define LOG_FREQ 20000
+#define LOG_FREQ 40000
 #define LSA 0x000000 //Data Logger Start Adress 
 int logger_flag;
 int send_logger_flag; 

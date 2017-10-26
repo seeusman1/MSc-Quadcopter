@@ -65,8 +65,14 @@ int main(void)
 	LoggedData data;
 
 	while (!demo_done)
-	{
+	{	
+		#ifdef PROFILING
+		new_t = get_time_us();
 		handle_communication();
+		comm_time = get_time_us() - new_t;
+		#else
+		handle_communication();
+		#endif
 
 		// process_key( dequeue(&rx_queue) );
 
@@ -76,10 +82,39 @@ int main(void)
 			adc_request_sample();
 			read_baro();
 
-			
 			clear_timer_flag();
 		}
 
+		#ifdef PROFILING
+		if (check_sensor_int_flag()) 
+		{
+			if(is_raw()) {
+				new_t = get_time_us();
+				get_raw_sensor_data();
+				get_raw_attitude();
+				calibrate_imu();
+				kalman_filter();
+				log_time = get_time_us() - new_t;
+			} else {
+				new_t = get_time_us();
+				get_dmp_data();
+
+				calibrate_imu();
+				log_time = get_time_us() - new_t;
+				phi = sphi;
+				theta = stheta;
+				psi = spsi;
+			}
+			new_t = get_time_us();
+			pressure = bw_filter((int32_t) (pressure));
+			tele_time = get_time_us() - new_t;
+			check_safety();
+			new_t = get_time_us();
+			run_filters_and_control();
+			cont_time = get_time_us() - new_t;
+			send_telemetry();
+		}
+		#else
 		if (check_sensor_int_flag()) 
 		{
 			if(is_raw()) {
@@ -101,7 +136,7 @@ int main(void)
 			run_filters_and_control();
 			send_telemetry();
 		}
-
+		#endif
 		
 
 		/*Logging*/
@@ -109,7 +144,7 @@ int main(void)
 		{	
 			old_t = get_time_us();
 
-			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
+			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,get_time_us(),bat_volt);
 			if((write_address = log_data(write_address,&data)) == 0){
 				printf("Fail to log_data\n");
 				nrf_gpio_pin_toggle(RED);
@@ -136,10 +171,10 @@ int main(void)
 				nrf_gpio_pin_toggle(BLUE);
 				nrf_gpio_pin_toggle(RED);
 				nrf_gpio_pin_toggle(GREEN);
-				current = send_log_data(current);	
+				current = send_log_data(current);
+				nrf_wdt_reload_request_set(NRF_WDT_RR0);
 			}
 		}
-			//printf(".");	
 	}
 	printf("\nDone!\n");
 

@@ -3,7 +3,7 @@
 #define __PC_TERMINAL_H
 
 #define JOYSTICK_PRESENT
-
+#define PROFILING
 #include "interface/interface.h"
 #include "messaging/messaging.h"
 #include "../protocol.h"

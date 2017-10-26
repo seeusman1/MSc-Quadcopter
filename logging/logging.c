@@ -15,12 +15,12 @@
 *
 */
 void prepare_to_Log(	LoggedData *data,
-						uint8_t mode,
+						int8_t mode,
 						int16_t *ae, 
-						uint16_t phi, uint16_t theta, uint16_t psi, 
-						uint16_t sp, uint16_t sq, uint16_t sr,
+						int16_t phi, int16_t theta, int16_t psi, 
+						int16_t sp, int16_t sq, int16_t sr,
 						int16_t *motor,
-						int32_t pressure,int32_t temperature,
+						int32_t pressure,uint32_t temperature,
 						uint16_t bat_volt)
 {
 	//Store the data
