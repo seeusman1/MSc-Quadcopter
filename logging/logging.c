@@ -3,6 +3,7 @@
 #include "../protocol.h"
 #include "../in4073.h"
 #include "logging.h"
+#include "../communication/communication.h"
 /*
 *Author D.Patoukas
 */
@@ -79,22 +80,15 @@ uint32_t send_log_data(uint32_t address)//, LoggedData *data)
 	{	
 		char* ptr_data = (char*) &data;
 
-		for (j = 0; j < sizeof(LoggedData)/PAYLOAD_SIZE; j++)
+		for (j = 0; j < LOGGER_SIZE; j += PAYLOAD_SIZE)
 		{
-			//msg.data = data;
-			//char* ptr =(char*) &msg;
-			uart_put(msg.id);
-			//Send the data
-			for (i = 0; i < PAYLOAD_SIZE; i++)
-			{	
-				nrf_gpio_pin_toggle(GREEN);
-				uart_put(*ptr_data++);
-			}
+			memcpy(&(msg.data[j]), &(ptr_data[j]), sizeof(msg.data));
+			send_message_unsafe((char*) &msg);
 		}
 		address += sizeof(LoggedData);
 		return address;
 	
-	}else{
+	} else {
 		nrf_gpio_pin_toggle(RED);
 		return address;
 	}
