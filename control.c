@@ -242,10 +242,10 @@ void height_control() {
 	int32_t N = (current_pose.yaw)/scale;
 
 		
-	uint32_t pressure_fil = bw_filter((int32_t) (pressure)); // filtering pressure value
+	//uint32_t pressure_fil = bw_filter((int32_t) (pressure)); // filtering pressure value
 
-	int32_t Z_new = Z + P_height * (pressure_fil - pressure_ref);//height controller
-
+	//int32_t Z_new = Z + P_height * (-pressure_fil + pressure_ref);//height controller
+	int32_t Z_new = Z + P_height * (pressure - pressure_ref);//height controller
 	
 	N = P * (N-(sr/32)); // P controller for Yaw
 	L = P2 * ((P1 * ((L - phi/32)/2) - sp/32)/2); // Cascaded P controller for Roll 

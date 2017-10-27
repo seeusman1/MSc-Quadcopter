@@ -93,7 +93,9 @@ int main(void)
 
 			adc_request_sample();
 			read_baro();
-
+			start_profile();
+			//pressure = bw_filter((int32_t) (pressure));
+			tele_time = stop_profile();
 			clear_timer_flag();
 		}
 
@@ -118,9 +120,7 @@ int main(void)
 				psi = spsi;
 			}
 			log_time = stop_profile();
-			start_profile();
-			pressure = bw_filter((int32_t) (pressure));
-			tele_time = stop_profile();
+
 
 			check_safety();
 
@@ -164,7 +164,6 @@ int main(void)
 				nrf_gpio_pin_toggle(RED);
 				nrf_gpio_pin_toggle(GREEN);
 				current = send_log_data(current);
-				nrf_wdt_reload_request_set(NRF_WDT_RR0);
 			}
 		}
 	}

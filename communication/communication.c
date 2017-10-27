@@ -123,6 +123,7 @@ void process_key(uint8_t c)
 			try_transition(HEIGHTCONTROL);
 			break;
 		case 27:
+			try_transition(SAFE);
 			demo_done = true;
 			break;
 		case (char) 4: //ASCII end of transmission, using it for killswitch.
