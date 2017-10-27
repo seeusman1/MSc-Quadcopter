@@ -24,6 +24,22 @@
 #include "telemetry/telemetry.h"
 #include "filtering/kalman.h"
 #include "filtering/butterworth.h"
+
+void start_profile() {
+#ifdef PROFILE
+	new_t = get_time_us();
+#endif //PROFILE
+}
+
+uint32_t stop_profile() {
+#ifdef PROFILE
+	return (get_time_us() - new_t);
+#endif //PROFILE
+	return 0;
+}
+
+
+
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -66,13 +82,9 @@ int main(void)
 
 	while (!demo_done)
 	{	
-		#ifdef PROFILING
-		new_t = get_time_us();
+		start_profile();
 		handle_communication();
-		comm_time = get_time_us() - new_t;
-		#else
-		handle_communication();
-		#endif
+		comm_time = stop_profile();
 
 		// process_key( dequeue(&rx_queue) );
 
@@ -85,58 +97,38 @@ int main(void)
 			clear_timer_flag();
 		}
 
-		#ifdef PROFILING
 		if (check_sensor_int_flag()) 
 		{
+			start_profile();
 			if(is_raw()) {
-				new_t = get_time_us();
+
 				get_raw_sensor_data();
 				get_raw_attitude();
 				calibrate_imu();
 				kalman_filter();
-				log_time = get_time_us() - new_t;
+
 			} else {
-				new_t = get_time_us();
+				start_profile();
 				get_dmp_data();
 
 				calibrate_imu();
-				log_time = get_time_us() - new_t;
+
 				phi = sphi;
 				theta = stheta;
 				psi = spsi;
 			}
-			new_t = get_time_us();
+			log_time = stop_profile();
+			start_profile();
 			pressure = bw_filter((int32_t) (pressure));
-			tele_time = get_time_us() - new_t;
-			check_safety();
-			new_t = get_time_us();
-			run_filters_and_control();
-			cont_time = get_time_us() - new_t;
-			send_telemetry();
-		}
-		#else
-		if (check_sensor_int_flag()) 
-		{
-			if(is_raw()) {
-				get_raw_sensor_data();
-				get_raw_attitude();
-				calibrate_imu();
-				kalman_filter();
-			} else {
-				get_dmp_data();
+			tele_time = stop_profile();
 
-				calibrate_imu();
-				phi = sphi;
-				theta = stheta;
-				psi = spsi;
-			}
-			
-			pressure = bw_filter((int32_t) (pressure));
 			check_safety();
+
+			start_profile();
 			run_filters_and_control();
+			cont_time = stop_profile();
 			send_telemetry();
 		}
-		#endif
 		
 
 		/*Logging*/
