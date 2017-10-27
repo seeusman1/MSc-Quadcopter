@@ -69,7 +69,7 @@ void handle_log(LogMessage* m) {
 	//Once all log messages are received print a log message
 	if (rmn == 0)
 	{
-		fprintf(f,"%d\t %6d\t%6d\t%6d\t", -
+		fprintf(f,"%d\t %6d\t%6d\t%6d\t", 
 			loggdata->mode,loggdata->sp,loggdata->sq,loggdata->sr);
 		fprintf(f, "%6d %6d %6d", 
 			loggdata->phi,loggdata->theta,loggdata->psi);
@@ -92,6 +92,7 @@ int s_flag = 0;
 int m_flag = 0;
 int a_flag = 0;
 int r_flag = 0;
+int p_flag = 0;
 
 void handle_message()
 {
@@ -103,8 +104,11 @@ void handle_message()
 	AngleMessage* a_msg = (AngleMessage*) &msg[0];
 	RateMessage*  r_msg = (RateMessage*)  &msg[0];
 	StatMessage*  s_msg = (StatMessage*)  &msg[0];
-
-	
+#ifdef PROFILING
+	ProfMessage* pr_msg = (ProfMessage*) &msg[0];
+#else
+	p_flag = 1;
+#endif
 	if (receive_queue.count >= MESSAGE_SIZE){
 
 		for(uint8_t i=0; i < MESSAGE_SIZE; i++){
@@ -148,9 +152,23 @@ void handle_message()
 				pr_batt = s_msg->bat_volt;
 				pr_mode = s_msg->mode;
 				break;
+			#ifdef PROFILING
+			case PROF:
+				p_flag = 1;
+				pr_cont_time = pr_msg->cont_time;
+				pr_tele_time = pr_msg->tele_time;
+				pr_comm_time = pr_msg->comm_time;
+				pr_log_time = pr_msg->log_time;
+				break;
+			#endif
 		}
-		if (r_flag && m_flag && s_flag && a_flag && !term)
-		{
+		if (r_flag && m_flag && s_flag && a_flag && !term && p_flag)
+		{	 
+
+			 #ifdef PROFILING
+			 printf("%4d,	%4d,	",pr_cont_time,pr_tele_time);
+			 printf("%4d,	%4d	|",pr_comm_time,pr_log_time);
+			 #endif
 			 printf("%3d %3d %3d %3d | ",pr_motor[0],pr_motor[1],pr_motor[2],pr_motor[3]);
 			 printf("%6d %6d %6d | ", pr_phi, pr_theta, pr_psi);
 			 printf("%6d %6d %6d | ", pr_sp, pr_sq, pr_sr);

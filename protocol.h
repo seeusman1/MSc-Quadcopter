@@ -17,7 +17,8 @@ typedef enum {
 	MOTOR,
 	ANGLE,
 	RATE,
-	STAT
+	STAT,
+	PROF
 } __attribute__ ((__packed__)) MessageId;
 _Static_assert(sizeof(MessageId) == 1, "MessageId size is incorrect.");
 
@@ -101,5 +102,15 @@ typedef struct {
 	uint8_t padding[1];		
 } __attribute__((packed)) StatMessage;
 _Static_assert(sizeof(StatMessage) == MESSAGE_SIZE, "RateMessage size is incorrect.");
+
+
+ typedef struct {
+ 	MessageId id : 8;
+	uint16_t cont_time;
+	uint16_t tele_time;
+	uint16_t comm_time;
+	uint16_t log_time;
+ } __attribute__((packed)) ProfMessage;
+ _Static_assert(sizeof(ProfMessage) == MESSAGE_SIZE, "ProfMessage size is incorrect.");
 
 #endif //__PROTOCOL_H

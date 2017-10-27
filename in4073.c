@@ -24,6 +24,22 @@
 #include "telemetry/telemetry.h"
 #include "filtering/kalman.h"
 #include "filtering/butterworth.h"
+
+void start_profile() {
+#ifdef PROFILING
+	new_t = get_time_us();
+#endif //PROFILING
+}
+
+uint32_t stop_profile() {
+#ifdef PROFILING
+	return (get_time_us() - new_t);
+#endif //PROFILING
+	return 0;
+}
+
+
+
 /*------------------------------------------------------------------
  * main -- everything you need is here :)
  *------------------------------------------------------------------
@@ -65,8 +81,10 @@ int main(void)
 	LoggedData data;
 
 	while (!demo_done)
-	{
+	{	
+		start_profile();
 		handle_communication();
+		comm_time = stop_profile();
 
 		// process_key( dequeue(&rx_queue) );
 
@@ -76,32 +94,41 @@ int main(void)
 			adc_request_sample();
 			read_baro();
 
-			
 			clear_timer_flag();
 		}
 
 		if (check_sensor_int_flag()) 
 		{
+			start_profile();
 			if(is_raw()) {
+
 				get_raw_sensor_data();
 				get_raw_attitude();
 				calibrate_imu();
 				kalman_filter();
+
 			} else {
+				start_profile();
 				get_dmp_data();
 
 				calibrate_imu();
+
 				phi = sphi;
 				theta = stheta;
 				psi = spsi;
 			}
-			
+			log_time = stop_profile();
+			start_profile();
 			pressure = bw_filter((int32_t) (pressure));
+			tele_time = stop_profile();
+
 			check_safety();
+
+			start_profile();
 			run_filters_and_control();
+			cont_time = stop_profile();
 			send_telemetry();
 		}
-
 		
 
 		/*Logging*/
@@ -109,7 +136,7 @@ int main(void)
 		{	
 			old_t = get_time_us();
 
-			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,temperature,bat_volt);
+			prepare_to_Log(&data,get_current_state(),ae,phi,theta,psi,sp,sq,sr,motor,pressure,get_time_us(),bat_volt);
 			if((write_address = log_data(write_address,&data)) == 0){
 				printf("Fail to log_data\n");
 				nrf_gpio_pin_toggle(RED);
@@ -136,10 +163,10 @@ int main(void)
 				nrf_gpio_pin_toggle(BLUE);
 				nrf_gpio_pin_toggle(RED);
 				nrf_gpio_pin_toggle(GREEN);
-				current = send_log_data(current);	
+				current = send_log_data(current);
+				nrf_wdt_reload_request_set(NRF_WDT_RR0);
 			}
 		}
-			//printf(".");	
 	}
 	printf("\nDone!\n");
 
