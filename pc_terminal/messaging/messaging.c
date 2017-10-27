@@ -104,8 +104,11 @@ void handle_message()
 	AngleMessage* a_msg = (AngleMessage*) &msg[0];
 	RateMessage*  r_msg = (RateMessage*)  &msg[0];
 	StatMessage*  s_msg = (StatMessage*)  &msg[0];
+#ifdef PROFILING
 	ProfMessage* pr_msg = (ProfMessage*) &msg[0];
-	
+#else
+	p_flag = 1;
+#endif
 	if (receive_queue.count >= MESSAGE_SIZE){
 
 		for(uint8_t i=0; i < MESSAGE_SIZE; i++){
@@ -157,8 +160,6 @@ void handle_message()
 				pr_comm_time = pr_msg->comm_time;
 				pr_log_time = pr_msg->log_time;
 				break;
-			#else
-				p_flag = 1;
 			#endif
 		}
 		if (r_flag && m_flag && s_flag && a_flag && !term && p_flag)
