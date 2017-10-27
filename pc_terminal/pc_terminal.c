@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 	// fprintf(f, "\tphi theta\t psi|");
 	fprintf(f, "%-6s%-8s%-6s", "phi", "theta", "psi");
 	fprintf(f, "ae[0]\tae[1]\tae[2]\tae[3]|motor[0]\tmotor[1]\tmotor[2]\tmotor[3]|");
-	fprintf(f,"Bat\t ,Temp:\t ,Press:\t|\n");
+	fprintf(f,"Bat\t ,Time:\t ,Press:\t|\n");
 	while(incoming_msg_check());
 	printf("Done!\n");
 	
