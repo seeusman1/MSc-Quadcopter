@@ -39,14 +39,12 @@ uint32_t thrust_ref;
 
 bool demo_done;
 
-#define PROFILING
-#ifdef PROFILING 
+//#define PROFILING
 uint16_t cont_time;
 uint16_t tele_time;
 uint16_t comm_time;
 uint16_t log_time;
 uint32_t new_t;
-#endif
 
 //Logging
 #define SEND_FREQ 20000

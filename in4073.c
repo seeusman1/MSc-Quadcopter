@@ -26,15 +26,15 @@
 #include "filtering/butterworth.h"
 
 void start_profile() {
-#ifdef PROFILE
+#ifdef PROFILING
 	new_t = get_time_us();
-#endif //PROFILE
+#endif //PROFILING
 }
 
 uint32_t stop_profile() {
-#ifdef PROFILE
+#ifdef PROFILING
 	return (get_time_us() - new_t);
-#endif //PROFILE
+#endif //PROFILING
 	return 0;
 }
 
