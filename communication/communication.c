@@ -242,3 +242,30 @@ void handle_communication() {
 		}
 	}
 }
+
+/*
+ * Author Rutger van den Berg
+ *
+ * Sends the provided message to the PC.
+ */
+void send_message(GenericMessage* msg) {
+	CRCMessage message = make_packet((char*) msg);
+	for (uint8_t i = 0; i < CRC_MESSAGE_SIZE; i++)
+	{
+		uart_put(((char*) (&message))[i]);
+	}
+}
+
+/*
+ * Author Rutger van den Berg
+ *
+ * Sends the provided message to the PC.
+ *
+ * Does NOT use CRC message integrity.
+ */
+void send_message_unsafe(GenericMessage* msg) {
+	for (uint8_t i = 0; i < MESSAGE_SIZE; i++)
+	{
+		uart_put(((char*) (msg))[i]);
+	}
+}
